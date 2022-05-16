@@ -1,0 +1,38 @@
+.code-view {
+    white-space: pre-wrap;
+    font-family: Consolas, "Roboto Mono";
+    max-height: 200px;
+    position: relative;
+    overflow: hidden;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #202225;
+    margin: 5px;
+    padding: 10px;
+    background-color: #2b2d31;
+    width: 325px;
+    color: #bfbfbf;
+
+    &:before {
+        content: "";
+        width: 100%;
+        height: 75px;
+        position: absolute;
+        left: 0;
+        top: 147px;
+        background: linear-gradient(rgba(0,0,0,0), #2b2d31);
+    }
+
+}
+
+::ng-deep .number {
+    color: #2fb1a7;
+}
+
+::ng-deep .header {
+    color: #3a8de2;
+}
+
+::ng-deep .header-text {
+    color: #f74731;
+}

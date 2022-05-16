@@ -1,0 +1,41 @@
+<p style="margin: 0;">
+    <mat-toolbar class="titlebar" color="primary">
+        <span>EQ Suicide Kings</span>
+        <span class="spacer"></span>
+        <button mat-icon-button aria-label="Minimize to tray" (click)="minimizeTaskbar()">
+            <mat-icon>south_east</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="Minimize application" (click)="minimizeTaskbar()">
+            <mat-icon>minimize</mat-icon>
+        </button>
+        <button mat-icon-button aria-label="Exit application" (click)="quitApp()">
+            <mat-icon>clear</mat-icon>
+        </button>
+    </mat-toolbar>
+</p>
+<section>
+    <mat-tab-group animationDuration="0ms" (selectedIndexChange)="onChangeTabs($event)" [selectedIndex]="0">
+
+        <mat-tab label="SK List">
+            
+            <app-sk-lists #skLists></app-sk-lists>
+
+        </mat-tab>
+        <mat-tab label="Guild">
+
+            <app-guild-roster #guildRoster></app-guild-roster>
+
+        </mat-tab>
+        <mat-tab label="Attendance">
+
+            <app-attendance #attendance></app-attendance>
+
+        </mat-tab>
+        <mat-tab label="Settings">
+
+            <app-settings #settingsComponent></app-settings>
+
+        </mat-tab>
+    </mat-tab-group>
+
+</section>

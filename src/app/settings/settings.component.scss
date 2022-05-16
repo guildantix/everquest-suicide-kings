@@ -1,0 +1,15 @@
+.settings-row {
+    display: flex;
+    flex-flow: column wrap; /* shorthand for flex-direction and flex-wrap */ 
+
+    > div {
+        flex: 0 0 auto; /* shorthand for flex-grow, flex-shrink, and flex-basis */
+        align-self: flex-start;
+    }
+}
+
+small {
+    opacity: 0.5;
+    display: block;
+    margin: 20px 10px;
+}

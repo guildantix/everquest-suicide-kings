@@ -1,0 +1,52 @@
+<h2 mat-dialog-title>Suicide List History</h2>
+
+<mat-dialog-content>
+
+    <div class="filters">
+
+        <mat-form-field style="width: 400px; color: #7b1fa2;">
+            <mat-label></mat-label>
+            <input matInput [(ngModel)]="searchTerm" />
+            <mat-hint>Search for members</mat-hint>
+            <button mat-icon-button matSuffix *ngIf="searchTerm" (click)="searchTerm = null"><mat-icon class="color-red">clear</mat-icon></button>
+        </mat-form-field>
+
+        <span class="spacer"></span>
+
+        <mat-form-field>
+            <mat-label></mat-label>
+            <mat-select [(ngModel)]="searchDate">
+                <mat-option [value]="null">All Dates</mat-option>
+                <mat-option *ngFor="let d of raidDates" [value]="d">{{d | date:'shortDate'}}</mat-option>
+            </mat-select>
+            <mat-hint>Filter by Date</mat-hint>
+        </mat-form-field>
+
+    </div>
+
+    <app-infinite-scroller #infiniteScroller [data]="history">
+        <table>
+            <tr>
+                <th style="width: 45%">Character</th>
+                <th>Timestamp</th>
+                <th></th>
+            </tr>
+            <tr *ngFor="let h of infiniteScroller.data">
+                <td><span class="pointer hover-blue" (click)="searchTerm = h.list[h.suicideIndex].name">{{h.list[h.suicideIndex].name}}</span></td>
+                <td class="subtle-date">{{h.timestamp | date:'short'}}</td>
+                <td class="pointer" style="padding-top: 4px;">
+                    <a class="a-btn parent-hover-only hover-blue" (click)="showHistoryNote(h)"><mat-icon fontSet="material-icons-outlined">description</mat-icon></a>
+                    <a class="a-btn parent-hover-only hover-blue" (click)="confirmSwapName(h)"><mat-icon fontSet="material-icons-outlined">change_circle</mat-icon></a>
+                    <a class="a-btn parent-hover-only hover-red" (click)="confirmRollback(h)"><mat-icon>remove_circle_outline</mat-icon></a>
+                </td>
+            </tr>
+        </table>
+    </app-infinite-scroller>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no">Close</button>
+
+</mat-dialog-actions>

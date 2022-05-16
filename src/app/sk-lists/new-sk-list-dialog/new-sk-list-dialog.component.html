@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>New Suicide Kings Master List</h2>
+
+<mat-dialog-content>
+
+    <p>A Master List is the full list of all possible raiders.  When a raid begins, the attending members will be pulled from the master list.</p>
+
+    <mat-form-field style="width: 100%">
+        <mat-label>List Name</mat-label>
+        <input matInput name="txtListName" [(ngModel)]="model.name" />
+        <!-- <mat-hint></mat-hint> -->
+    </mat-form-field>
+
+    <div>
+        <button mat-button (click)="selectMains()"><mat-icon>check_box</mat-icon>Select Mains</button>
+        <button mat-button (click)="selectAlts()"><mat-icon>check_box</mat-icon>Select Alts</button>
+        <button mat-button (click)="unselectAll()"><mat-icon>check_box_outline_blank</mat-icon>Unselect All</button>
+        <button mat-button (click)="randomizeSeeds()"><mat-icon>shuffle</mat-icon>Randomize All Seeds</button>
+    </div>
+
+    <table>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Class</th>
+            <th>Main</th>
+            <th>Initial Seed</th>
+        </tr>
+        <tr *ngFor="let member of roster; let i = index">
+            <td><mat-checkbox [(ngModel)]="member.selected"></mat-checkbox></td>
+            <td>{{member.name}}</td>
+            <td><span class="faded character-level">[{{member.level}}]</span>{{member.class}}</td>
+            <td>{{member.alt ? '' : 'Y'}}</td>
+            <td>
+                <input name="txtInitialSeed_{{i}}" [(ngModel)]="member.initialSeed" [enabled]="member.selected" class="inline-input" />
+                <a [disabled]="!member.selected" class="color-blue a-btn" (click)="randomizeSeed(i)">Random</a>
+            </td>
+        </tr>
+    </table>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no" color="warn">Cancel</button>
+    <button mat-button (click)="createList()" class="t-confirm-no">Create</button>
+
+</mat-dialog-actions>

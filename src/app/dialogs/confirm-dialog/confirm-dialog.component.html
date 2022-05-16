@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>Confirm</h2>
+
+<mat-dialog-content>
+
+    <p *ngFor="let msg of messages">
+        <ng-template [ngIf]="isColoredString(msg)" [ngIfElse]="isString">
+            <span [style.color]="msg.color" [style.font-weight]="msg.bold ? 'bold' : 'unset'">{{msg.value}}</span>
+        </ng-template>
+        <ng-template #isString>
+            {{msg}}
+        </ng-template>
+    </p>
+    <div class="btn-info">
+        <small *ngIf="data.yesMessage != null">{{data.yesMessage}}</small>
+        <small *ngIf="data.noMessage != null">{{data.noMessage}}</small>    
+    </div>
+    <div *ngIf="showTable">
+        <table>
+            <thead>
+                <tr>
+                    <th *ngFor="let header of data.tableColumns">{{header.headerText}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of data.tableData">
+                    <td *ngFor="let header of data.tableColumns">{{getTableValue(header, item)}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+
+  <button mat-button mat-dialog-close class="t-confirm-no" color="warn">No</button>
+  <button mat-button [mat-dialog-close]="true" class="t-confirm-yes" color="accent">Yes</button>
+
+</mat-dialog-actions>

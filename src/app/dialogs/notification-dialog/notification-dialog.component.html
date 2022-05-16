@@ -1,0 +1,26 @@
+<div class="error-report" *ngIf="data.error != null">Click <a href="javascript:void(0)" (click)="copyErrorInformation()">here</a> to copy the error details.</div>
+<h2 mat-dialog-title>{{(data.title == null ? 'Notification' : data.title)}}</h2>
+
+<mat-dialog-content>
+
+    <div style="display: flex;flex-direction: row;">
+        <div class="icon-container">
+            <mat-icon class="material-icons-outlined" *ngIf="data.notificationType == notificationTypes.Warning">warning</mat-icon>
+            <mat-icon style="color: #f44336;" *ngIf="data.notificationType == notificationTypes.Error">error</mat-icon>
+            <mat-icon class="material-icons-outlined" *ngIf="data.notificationType == notificationTypes.Information">info</mat-icon>
+            <mat-icon fontSet="material-icons-outlined" *ngIf="data.notificationType == notificationTypes.Note">description</mat-icon>
+        </div>
+        <div class="text-container">
+            <p *ngFor="let msg of messages" style="width: 100%;">{{msg}}</p>
+        </div>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="ignoreFutureWarnings" class="t-confirm-no">Close</button>
+    <span class="spacer"></span>
+    <mat-checkbox [(ngModel)]="ignoreFutureWarnings" style="float:right;" *ngIf="data.showHideCheckbox">Don't show this again.</mat-checkbox>
+
+</mat-dialog-actions>

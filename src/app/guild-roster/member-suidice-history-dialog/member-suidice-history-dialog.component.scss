@@ -1,0 +1,12 @@
+table {
+    tr {
+        th:nth-child(1) {
+            width: 150px;
+        }
+
+        th:nth-child(1),
+        td:nth-child(1) {
+            text-align: left;
+        }
+    }
+}

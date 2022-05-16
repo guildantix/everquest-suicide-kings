@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Member Suicide History</h2>
+
+<mat-dialog-content>
+    
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Note</th>
+        </tr>
+        <tr *ngFor="let suicide of suicides">
+            <td>{{suicide.date | date:'short'}}</td>
+            <td>{{suicide.item}}</td>
+        </tr>
+    </table>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no">Close</button>
+
+</mat-dialog-actions>

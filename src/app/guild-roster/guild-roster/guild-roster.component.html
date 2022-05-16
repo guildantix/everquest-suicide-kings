@@ -1,0 +1,43 @@
+<mat-toolbar>
+    <span>Guild Roster</span>
+    <button mat-button color="accent" (click)="saveRoster()" *ngIf="hasChanges"><mat-icon style="margin-right: 10px;">save</mat-icon>Save Changes</button>
+    <span class="spacer"></span>
+    <mat-form-field style="width: 275px; color: #7b1fa2;">
+        <mat-label></mat-label>
+        <input matInput [(ngModel)]="searchTerm" />
+        <mat-hint>Search for members</mat-hint>
+    </mat-form-field>
+    <button mat-button color="accent" (click)="openFileSelect()"><mat-icon style="margin-right: 10px;">description</mat-icon>Select Guild Dump</button>
+</mat-toolbar>
+<div class="tab-content">
+
+    <div style="height: 36px;">
+        <button mat-button color="warn" (click)="deleteMissingMembers()" *ngIf="hasMissingMembers"><mat-icon style="margin-right: 10px;">delete_forever</mat-icon>Remove Missing Members</button>
+    </div>
+    
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Rank</th>
+            <th>Main</th>
+            <th>Last Suicide</th>
+            <th></th>
+        </tr>
+        <tr *ngFor="let member of filteredRoster; let i = index" [ngClass]="{'error': member.missingFromDump}">
+            <td>{{member.name}}<mat-icon *ngIf="member.missingFromDump" style="float: right;" color="warn" title="Member is missing from last dump file.">report</mat-icon></td>
+            <td>{{member.rank}}</td>
+            <td>{{member.alt ? '' : 'Y'}}</td>
+            <ng-template [ngIf]="member.suicides == null" [ngIfElse]="suicideHistory"><td></td></ng-template>
+            <ng-template #suicideHistory><td><a href="javascript:void(0)" class="color-blue" (click)="showMemberSuicideHistory(member.name)">{{member.suicides[member.suicides?.length-1].date | date:'shortDate'}}</a></td></ng-template>
+            <td style="width: 128px;">
+                <div style="display: flex; flex-direction: row-reverse; margin-right: 25px; width: 128px;">
+                    <button mat-button color="warn" (click)="deleteGuildMember(member)"><mat-icon>clear</mat-icon></button>
+                    <button mat-button color="default" class="hover-blue" (click)="showMemberNote(member.notes)" [matTooltip]="member.notes" matTooltipPosition="above" *ngIf="member.notes?.length > 0"><mat-icon fontSet="material-icons-outlined">description</mat-icon></button>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <input type="file" #fileSelector style="display:none;" accept="*.txt" (change)="fileSelected($event)" />
+
+</div>

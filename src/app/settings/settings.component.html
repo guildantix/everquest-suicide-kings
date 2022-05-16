@@ -1,0 +1,91 @@
+
+<mat-toolbar>
+    <span>Settings</span>
+    <span class="spacer"></span>
+    <small>Version {{version}}</small>
+</mat-toolbar>
+<div class="tab-content">
+
+    <div style="margin: 0 25px;">
+        <h4>Export Data</h4>
+        <button mat-button color="accent" (click)="exportDataFile()">Export Data Only</button>
+        <button mat-button color="warn" (click)="importDataFile()">Import Data Only</button>
+    </div>
+
+    <div style="margin: 0 25px;">
+        <h4>Backup</h4>
+        <button mat-button color="accent" (click)="getBackupFile()">Save Backup File</button>
+        <button mat-button color="warn" (click)="restoreBackupFile()">Restore Backup File</button>
+    </div>
+
+    <div style="margin: 0 25px;">
+        <h4>Log File</h4>
+        <small *ngIf="!logFilePath">Select a log file to start watching.</small>
+        <small *ngIf="logFilePath">{{logFilePath}}</small>
+        <button mat-button (click)="selectLogFile()">Select Log File</button>
+        <input type="file" #logFileSelector style="display:none;" accept="*.txt" (change)="logFileSelected($event)" />
+
+        <mat-form-field *ngIf="logFilePath" style="display: block;">
+            <mat-label>Suicide Symbol</mat-label>
+            <input matInput type="text" [(ngModel)]="bidSymbol" (blur)="saveBidSymbol()" name="txtBidSymbol" />
+            <mat-hint>This is the single character players will put in raid or guild say to notify the system that they are interested in an item up for suicide. (Default: X)</mat-hint>
+        </mat-form-field>
+
+        <mat-form-field *ngIf="logFilePath" style="display: block;">
+            <mat-label>Master Looters</mat-label>
+            <textarea matInput type="text" [(ngModel)]="bidTakers" (blur)="saveBidTakers()" name="txtBidTakers" cols="40" rows="5"></textarea>
+            <mat-hint>The listed characters have permission to start the bidding process.  Enter each character name on a new line.</mat-hint>
+        </mat-form-field>
+        
+        <mat-form-field *ngIf="logFilePath" style="display: block;">
+            <mat-label>Your Character</mat-label>
+            <input matInput type="text" [(ngModel)]="youCharacterName" (blur)="saveYouCharacterName()" name="txtYouCharacterName" />
+            <mat-hint>The name of your character used to match the word 'You' to your character.</mat-hint>
+        </mat-form-field>
+    </div>
+
+    <div style="margin: 0 25px;">
+        <div class="settings-row">
+            <div>
+                <h4>Suicide Kings Lists</h4>
+                <table>
+                    <tr>
+                        <th>SK List</th>
+                        <th></th>
+                    </tr>
+                    <tr *ngFor="let option of masterListOptions; let i = index">
+                        <td>{{option.label}}</td>
+                        <td class="pointer" (click)="deleteSkList(i)"><a class="color-red a-btn hover-only"><mat-icon>clear</mat-icon></a></td>
+                    </tr>
+                </table>
+            </div>
+            <h4>List Options</h4>
+            <mat-checkbox [(ngModel)]="singleListBidAccept" name="cbxSingleListBidAccept" (change)="saveListOptions()">When running multiple lists in a raid, only accept suicides from one list at time.</mat-checkbox>
+        </div>
+    </div>
+
+    <div style="margin: 0 25px;">
+        <h4>SK Variant Rules</h4>
+        <p>This section allows you to enable/disable variant rules for suicide kings.</p>
+        <div><mat-checkbox [(ngModel)]="enableSuicideGroups" name="cbxEnableSuicideGroups" (change)="saveSkVariantRules()">Enable suicide groups.</mat-checkbox><a href="javascript:void(0);" (click)="showSuicideGroupsHelp()" class="color-green app-icon-link"><mat-icon fontSet="material-icons-outlined">help_outline</mat-icon></a></div>
+    </div>
+
+    <div style="margin: 0 25px;">
+        <h4>History</h4>
+        <mat-form-field style="display: block;">
+            <mat-label>Raid Tracking Count</mat-label>
+            <input matInput type="number" [(ngModel)]="raidTrackingCount" (input)="saveRaidTrackingCount()" name="txtRaidTrackingCount" />
+            <mat-hint>The number of raids to track attendance.</mat-hint>
+        </mat-form-field>
+    </div>
+
+    <!-- <div style="margin: 0 25px;">
+        <h4>A Bad Help File</h4>
+        <ul>
+            <li>Modifying a List
+                <p>To manually modify an existing list, use the discord Numerical list and manually move characters to your desired positions.  Once all modifications are made, you can import the list using the "Import from Discord" function on the Lists tab.</p>
+            </li>
+        </ul>
+    </div> -->
+
+</div>

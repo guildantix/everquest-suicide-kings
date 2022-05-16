@@ -1,0 +1,21 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": [],
+    "experimentalDecorators": true,
+    "allowJs": true,
+    "strictNullChecks": false
+  },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts"
+  ],
+  "include": [
+    "src/app/*.ts"
+  ],
+  "exclude": [
+    "src/app/*.spec.ts"
+  ]
+}

@@ -1,0 +1,86 @@
+:host ::ng-deep .modal .modal-menu > .mat-tab-header > .mat-tab-label-container {
+    position: fixed;
+    z-index: 2;
+    left: 0;
+    right: 0;
+}
+
+.modal {
+    
+    // .card {
+    //     max-width: 400px;
+    // }
+
+    header {
+        margin: 0;
+        width: 100%;
+    }
+
+    section {
+        margin: 0;
+        flex: 1 1 auto;
+        width: 100%;
+        overflow: auto;
+    }
+    
+    footer {
+        
+        button {
+            margin:0 10px;
+        }
+
+        margin: 0;
+        // position: fixed;
+        // bottom: 0;
+        padding: 20px;
+        width: 100%;
+    }
+
+    .tab-content {
+
+        mat-form-field {
+            width: 100%;
+        }
+
+        padding: 47px 10px 0 10px;
+        // padding-top: 47px;
+    }
+    .tab-content.flex {
+
+        .card {
+            width: 400px;
+            margin: 5px;
+        }
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+.modal ::ng-deep mat-card-content {
+    
+    mat-tab-group {
+        border-radius: 3px;
+    }
+    
+    mat-tab-body {
+        div.card-tab-content {
+            margin-top: 15px !important;
+            margin-bottom: 15px !important;
+            padding: 0 15px !important;
+        }
+    }
+}
+
+::ng-deep .mat-tab-body-content {
+    > div {
+        padding: 0 15px;
+    }
+}

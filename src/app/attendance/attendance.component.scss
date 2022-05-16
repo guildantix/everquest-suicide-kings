@@ -1,0 +1,14 @@
+table {
+    tr {
+        td,th {
+            &:nth-child(n+4) {
+                text-align: right;
+            }
+        }
+    }
+}
+
+
+// table tr td:nth-child(n+3) {
+//     text-align: right;
+// }

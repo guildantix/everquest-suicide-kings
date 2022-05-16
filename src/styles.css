@@ -1,0 +1,65 @@
+/* @import '@angular/material/prebuilt-themes/purple-green.css'; */
+
+body{ margin: 0; height: 100%; font-family: Roboto,"Helvetica Neue Light","Helvetica Neue",Helvetica,Arial,"Lucida Grande",sans-serif; color: #fff; }
+html { height: 100%; overflow-y: hidden; }
+.docs-app-background {
+    background: #303030;
+    background-image: initial;
+    background-position-x: initial;
+    background-position-y: initial;
+    background-size: initial;
+    background-attachment: initial;
+    background-origin: initial;
+    background-clip: initial;
+    background-color: rgb(48, 48, 48);
+}
+h1 {
+    display: inline-block;
+    font-size: 34px;
+    font-weight: 400;
+    padding: 5px;
+}
+h1, h2 {
+    font-weight: 400;
+}
+h2 {
+    font-size: 24px;
+}
+h3 {
+    font-size: 20px;
+}
+h2, h4 {
+    margin-top: 40px;
+}
+
+ol, p, ul {
+    font-size: 16px;
+    line-height: 28px;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+.mat-focused .mat-form-field-label {
+    /*change color of label*/
+    color: #ffffff !important;
+}
+
+    /* change color of underline */
+/* .mat-form-field-underline {
+    background-color: green !important;
+}  */
+
+    /*change color of underline when focused*/
+/* .mat-form-field-ripple {
+    background-color: green !important;
+} */
+
+.mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
+    color: #ffffff;
+}
+
+.mat-input-element { 
+    caret-color: #ffffff; 
+}

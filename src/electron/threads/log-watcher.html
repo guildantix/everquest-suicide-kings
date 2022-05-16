@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>ElectronAngularEqParse</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <!-- <script type="text/javascript" src="testing.js"></script> -->
+</head>
+
+<body>
+    <h1>Header text</h1>
+    <script type="text/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+        var LogWatcher = require('./log-watcher');
+        LogWatcher(decodeURI(urlParams.get('logFile')), decodeURI(urlParams.get('characterName')), decodeURI(urlParams.get('bidSymbol')), JSON.parse(decodeURI(urlParams.get('bidTakers'))));
+    </script>
+</body>
+
+</html>

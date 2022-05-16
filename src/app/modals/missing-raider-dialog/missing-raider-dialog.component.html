@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Add Raider to Lists</h2>
+
+<mat-dialog-content>
+
+    <p>Some of the raid event attendees are not assigned to any suicide kings lists.</p>
+    <p>Select the lists, if any, to assign the following attendees to.</p>
+
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Class</th>
+            <th style="text-align: center; width: 227px;">Lists</th>
+        </tr>
+        <tr *ngFor="let raider of data.raiders">
+            <td>{{raider.name}}</td>
+            <td><span class="faded character-level">[{{raider.level > 0 ? raider.level.toString() : 'n/a'}}]</span>{{raider.class ? raider.class : 'n/a'}}</td>
+            <td>
+                <mat-select [(ngModel)]="raider.listIds" multiple class="inline-input" style="float: right;">
+                    <mat-option *ngFor="let opt of listOptions" [value]="opt.id">{{opt.label}}</mat-option>
+                </mat-select>
+            </td>
+        </tr>
+    </table>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no" color="warn">Cancel</button>
+    <button mat-button (click)="addNewRaiders()" class="t-confirm-no">OK</button>
+
+</mat-dialog-actions>

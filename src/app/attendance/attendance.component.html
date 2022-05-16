@@ -1,0 +1,59 @@
+<mat-toolbar>
+    <span>Attendance</span>
+    <!-- <button mat-button color="accent" (click)="saveRoster()" *ngIf="hasChanges"><mat-icon style="margin-right: 10px;">save</mat-icon>Save Changes</button> -->
+    <span class="spacer"></span>
+    <mat-form-field style="margin-right: 15px;">
+        <mat-label></mat-label>
+        <mat-select [(ngModel)]="selectedClass" [disableOptionCentering]="true">
+            <mat-option [value]="null">All classes</mat-option>
+            <mat-option *ngFor="let option of classOptions" [value]="option">{{option}}</mat-option>
+        </mat-select>
+        <mat-hint>Select the class to display</mat-hint>
+    </mat-form-field>
+    <mat-form-field style="margin-right: 15px;">
+        <mat-label></mat-label>
+        <mat-select [(ngModel)]="selectedRank" [disableOptionCentering]="true">
+            <mat-option [value]="null">All ranks</mat-option>
+            <mat-option *ngFor="let option of rankOptions" [value]="option">{{option}}</mat-option>
+        </mat-select>
+        <mat-hint>Select the rank to display</mat-hint>
+    </mat-form-field>
+    <mat-form-field style="width: 275px; color: #7b1fa2;">
+        <mat-label></mat-label>
+        <input matInput [(ngModel)]="searchTerm" />
+        <mat-hint>Search for members</mat-hint>
+    </mat-form-field>
+    <!-- <button mat-button color="accent" (click)="openFileSelect()"><mat-icon style="margin-right: 10px;">description</mat-icon>Select Guild Dump</button> -->
+</mat-toolbar>
+<div class="tab-content">
+
+    <div style="height: 36px;">
+        <!-- <button mat-button color="warn" (click)="deleteMissingMembers()" *ngIf="hasMissingMembers"><mat-icon style="margin-right: 10px;">delete_forever</mat-icon>Remove Missing Members</button> -->
+    </div>
+    
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Class</th>
+            <th>Rank</th>
+            <th>Lists</th>
+            <th>{{raidTrackingCount}} raids</th>
+            <th>30 days</th>
+            <th>60 days</th>
+            <th>90 days</th>
+            <th>All</th>
+        </tr>
+        <tr *ngFor="let member of filteredRoster; let i = index" [ngClass]="{'error': member.missingFromDump}">
+            <td>{{member.name}}</td>
+            <td>{{member.class}}</td>
+            <td>{{member.rank}}</td>
+            <td>{{member.lists}}</td>
+            <td>{{member.trackedRaids}}</td>
+            <td>{{member.thirtyDays}}</td>
+            <td>{{member.sixtyDays}}</td>
+            <td>{{member.ninetyDays}}</td>
+            <td>{{member.allTime}}</td>
+        </tr>
+    </table>
+
+</div>

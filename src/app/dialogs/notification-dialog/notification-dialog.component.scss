@@ -1,0 +1,57 @@
+mat-dialog-content {
+    max-height: 250px;
+    padding-bottom: 0 !important;
+}
+
+.icon-container {
+    display: flex;
+    vertical-align: middle;
+    width: 125px;
+    justify-content: center;
+    margin-left: -22.5px;
+    align-items: center;
+    min-height: 100px;
+    flex: 0 0 auto;
+
+    > mat-icon {
+        font-size: 60px;
+        width: 60px;
+        height: 60px;
+        // color: #f44336;
+        flex: 0 0 auto;
+    }
+}
+
+.text-container {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+
+    > p {
+        margin: 5px;
+    }
+}
+
+.spacer {
+    flex: 1 1 auto;
+}
+
+.error-report {
+    font-size: 12px;
+    opacity: 0.77;
+    float: right;
+    margin-top: 12px;
+
+    a {
+        opacity: 1.0;
+    }
+
+}
+
+::ng-deep .error-details-snackbar {
+    white-space: pre-wrap;
+    max-width: 90% !important;
+}

@@ -1,0 +1,45 @@
+.inline-input {
+    background-color: #1E1E1E;
+    border: 1px solid #121212;
+    border-radius: 3px;
+    width: 50px;
+    color: #AEAEAE;
+    outline: none;
+}
+
+.a-btn {
+    font-size: 12px;
+    padding: 0 5px;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+        text-decoration: unset;
+    }
+}
+
+button mat-icon {
+    margin-right: 5px;
+}
+
+table {
+    tr {
+        td:nth-child(1),
+        th:nth-child(1){
+            width: 8px;
+            text-align: center;
+        }
+        td:nth-child(4),
+        th:nth-child(4){
+            width: 30px;
+            text-align: center;
+        }
+        td:nth-child(5),
+        th:nth-child(5){
+            width: 105px;
+        }
+        th:nth-child(5){
+            text-align: right;
+        }
+    }
+}

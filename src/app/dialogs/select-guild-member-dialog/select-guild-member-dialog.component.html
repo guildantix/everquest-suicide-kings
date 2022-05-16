@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>{{(data.title == null ? 'Select Guild Member' : data.title)}}</h2>
+
+<mat-dialog-content>
+
+    <p>Select a member from the guild.</p>
+
+    <mat-form-field>
+        <mat-label *ngIf="data.hint != null && data.label != null">{{data.label}}</mat-label>
+        <mat-select [(ngModel)]="model" name="ddlGuildMember">
+            <mat-option *ngFor="let name of options" [value]="name">{{name}}</mat-option>
+        </mat-select>
+        <mat-hint *ngIf="data.hint != null || data.label != null">{{data.hint ? data.hint : data.label}}</mat-hint>
+    </mat-form-field>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no" color="warn">Cancel</button>
+    <button mat-button [mat-dialog-close]="model" class="t-confirm-no">OK</button>
+
+</mat-dialog-actions>

@@ -1,0 +1,19 @@
+<h2 mat-dialog-title>{{(data.title == null ? 'Information required' : data.title)}}</h2>
+
+<mat-dialog-content>
+
+    <p *ngFor="let msg of messages">{{msg}}</p>
+
+    <div *ngFor="let option of options">
+        <mat-checkbox [(ngModel)]="option.selected">{{option.name}}</mat-checkbox>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no" color="warn">{{data.negativeText}}</button>
+    <button mat-button [mat-dialog-close]="undefined" class="t-confirm-no" *ngIf="data.otherText != null">{{data.otherText}}</button>
+    <button mat-button [mat-dialog-close]="options" class="t-confirm-no" color="accent">{{data.affirmativeText}}</button>
+
+</mat-dialog-actions>

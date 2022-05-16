@@ -1,0 +1,48 @@
+<h2 mat-dialog-title>Add New Character</h2>
+
+<mat-dialog-content>
+
+    <p>Enter the name of the new character</p>
+
+    <div class="container">
+        <mat-form-field>
+            <mat-label>Character Name</mat-label>
+            <input matInput [(ngModel)]="model.name" />
+        </mat-form-field>
+
+        <mat-form-field style="width: 10%; min-width: 0;">
+            <mat-label>Level</mat-label>
+            <input matInput type="number" [(ngModel)]="model.level" />
+        </mat-form-field>
+
+        <mat-form-field style="width: 20%; min-width: 0;">
+            <mat-label>Class</mat-label>
+            <mat-select [(ngModel)]="model.class">
+                <mat-option value="Bard">Bard</mat-option>
+                <mat-option value="Beastlord">Beastlord</mat-option>
+                <mat-option value="Berserker">Berserker</mat-option>
+                <mat-option value="Cleric">Cleric</mat-option>
+                <mat-option value="Druid">Druid</mat-option>
+                <mat-option value="Enchanter">Enchanter</mat-option>
+                <mat-option value="Magician">Magician</mat-option>
+                <mat-option value="Monk">Monk</mat-option>
+                <mat-option value="Necromancer">Necromancer</mat-option>
+                <mat-option value="Paladin">Paladin</mat-option>
+                <mat-option value="Ranger">Ranger</mat-option>
+                <mat-option value="Rogue">Rogue</mat-option>
+                <mat-option value="Shadow Knight">Shadow Knight</mat-option>
+                <mat-option value="Shaman">Shaman</mat-option>
+                <mat-option value="Warrior">Warrior</mat-option>
+                <mat-option value="Wizard">Wizard</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no" color="warn">Cancel</button>
+    <button mat-button [mat-dialog-close]="model" class="t-confirm-no">OK</button>
+
+</mat-dialog-actions>

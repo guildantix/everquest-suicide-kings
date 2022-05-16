@@ -1,0 +1,230 @@
+<div class="modal">
+    <header>
+        <mat-toolbar class="titlebar" color="default">
+            <span>Raid Event</span>
+            <span class="spacer"></span>
+            <button mat-icon-button aria-label="Exit application" (click)="closeModal()">
+                <mat-icon>clear</mat-icon>
+            </button>
+        </mat-toolbar>
+    </header>
+    <section>
+        <mat-tab-group animationDuration="0ms" [selectedIndex]="0">
+            <mat-tab label="Lists">
+                <mat-toolbar>
+                    <span>Raid SK Lists</span>
+                    <span class="spacer"></span>
+                    <button mat-button color="warn" [disabled]="!hasSelectedInRaid" (click)="removeSelectedFromRaid()"><mat-icon>person_remove</mat-icon> Remove Selected from Raid</button>
+                    <button mat-button (click)="fileSelector.click()"><mat-icon>file_download</mat-icon> Select Raid Output File</button>
+                    <!-- <button mat-button (click)="sendTest()">Send Test</button> -->
+                </mat-toolbar>
+
+                <div class="tab-content">
+                    <div style="margin: 10px;">
+                        <button mat-button (click)="closeModal()" *ngIf="raid != null"><mat-icon>event_busy</mat-icon> End Raid</button>
+                        <button mat-button (click)="showAddNewCharacter()" *ngIf="raid != null"><mat-icon>person</mat-icon> New Character</button>
+                        <button mat-button (click)="startTakingBids()" *ngIf="raid != null && !takingBids"><mat-icon>group</mat-icon> Start Taking Bids</button>
+                        <button mat-button (click)="stopTakingBids()" *ngIf="raid != null && takingBids"><mat-icon>group_remove</mat-icon> Stop Taking Bids</button>
+                        <button mat-button (click)="executeGroupSuicides()" *ngIf="suicideGroups?.length > 0" color="warn">Execute Suicides</button>
+                    </div>
+
+                    <ng-template [ngIf]="suicideGroups?.length > 0">
+                        <div *ngFor="let group of suicideGroups">
+                            <h3>{{group.masterListName}} Suicides</h3>
+
+                            <table>
+                                <tr>
+                                    <th style="width: 25px;"></th>
+                                    <th style="width: 125px;">Name</th>
+                                    <th style="width: 200px;">Class</th>
+                                    <th style="width: 125px;">Rank</th>
+                                    <th>Articles</th>
+                                </tr>
+                                <tr *ngFor="let raider of group.members; let i = index">
+                                    <td>{{raider.skListIndex + 1}}</td>
+                                    <td>{{raider.name}}</td>
+                                    <td><span class="pointer faded character-level">[{{raider.level > 0 ? raider.level.toString() : 'n/a'}}]</span>{{raider.class ? raider.class : 'n/a'}}</td>
+                                    <td>{{getGuildRank(raider.name)}}</td>
+                                    <td>
+                                        <mat-chip-list>
+                                            <mat-chip *ngFor="let article of raider.articles" (removed)="removeArticle(group, raider.name, article)">
+                                                {{article}}
+                                                <button mat-icon-button matChipRemove>
+                                                    <mat-icon>cancel</mat-icon>
+                                                </button>
+                                            </mat-chip>
+                                        </mat-chip-list>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p></p>
+
+                        </div>
+                    </ng-template>
+
+                    <ng-template [ngIf]="raid != null && takingBids">
+                        <div>
+                            <h2 style="margin-left: 20px;">
+                                Bidding for <span class="color-blue">{{bidArticleLabel}}</span>
+                                
+                                <mat-button-toggle-group [(ngModel)]="bl" name="tglsBidLists" [multiple]="!singleListBidAccept" *ngIf="raid?.lists.length > 1">
+                                    <mat-button-toggle *ngFor="let list of raid?.lists" [value]="list" color="accent">{{list.listName}}</mat-button-toggle>
+                                </mat-button-toggle-group>
+                                
+                            </h2>
+                            
+                            <div class="flex-grid">
+                                
+                                <div *ngFor="let list of bidLists">
+                                    <ng-template [ngIf]="takingBids && list.bidders?.length > 0">
+
+                                        <h3>{{list.listName}} Bidders</h3>
+                                        <table>
+                                            <tr>
+                                                <th></th>
+                                                <th></th>
+                                                <th>Name</th>
+                                                <th>Class</th>
+                                                <th>Rank</th>
+                                                <th></th>
+                                            </tr>
+                                            <tr *ngFor="let raider of list.bidders; let i = index">
+                                                <td>{{raider.skListIndex + 1}}</td>
+                                                <td><mat-checkbox [(ngModel)]="raider.selected" name="cbxSelectedBidder_{{i}}"></mat-checkbox></td>
+                                                <td [ngClass]="{'color-red': inSuicideGroup(list.masterListId, raider.name)}">{{raider.name}}</td>
+                                                <td><span class="pointer faded character-level">[{{raider.level > 0 ? raider.level.toString() : 'n/a'}}]</span>{{raider.class ? raider.class : 'n/a'}}</td>
+                                                <td>{{getGuildRank(raider.name)}}</td>
+                                                <td class="pointer" (click)="askSuicideRaider(raider, list.masterListId)"><a class="color-red a-btn hover-only">Suicide</a></td>
+                                            </tr>
+                                        </table>
+                                        <p></p>
+
+                                    </ng-template>
+                                </div>
+
+                            </div>
+                        </div>
+                    </ng-template>
+                    
+
+                    <div class="flex-grid">
+
+                        <div *ngIf="namesJoinedRaid?.length > 0">
+                            <h2>New Raiders</h2>
+                            
+                            <table>
+                                <tr>
+                                    <th>Name</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                                <tr *ngFor="let name of namesJoinedRaid">
+                                    <td>{{name}}</td>
+                                    <td class="pointer" style="width: 110px;" (click)="showAddNewCharacter(name)"><a class="color-blue a-btn hover-only">Add Character</a></td>
+                                    <td class="pointer" style="width: 65px;" (click)="dismissUnknownRaider(name)"><a class="color-red a-btn hover-only">Dismiss</a></td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <div *ngFor="let raid of raid?.lists">
+                            <h2>
+                                {{raid.listName}}
+                                <button mat-button (click)="openMasterHistory(raid.masterListId)" style="float: right;"><mat-icon>history</mat-icon> History</button>
+                            </h2>
+                            
+                            <table>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Rank</th>
+                                    <th></th>
+                                </tr>
+                                <tr *ngFor="let raider of raid.list; let i = index">
+                                    <td>{{raider.skListIndex + 1}}</td>
+                                    <td><mat-checkbox [(ngModel)]="raider.selected" name="cbxSelected_{{i}}"></mat-checkbox></td>
+                                    <td class="pointer" (click)="selectRaider(raider)">{{raider.name}}</td>
+                                    <td><span class="pointer faded character-level" (click)="selectRaider(raider)">[{{raider.level > 0 ? raider.level.toString() : 'n/a'}}]</span>{{raider.class ? raider.class : 'n/a'}}</td>
+                                    <td>{{getGuildRank(raider.name)}}</td>
+                                    <td class="pointer" (click)="askSuicideRaider(raider, raid.masterListId)"><a class="color-red a-btn hover-only">Suicide</a></td>
+                                </tr>
+                                <tr *ngIf="raid.list?.length == 0">
+                                    <td colspan="6">
+                                        <div style="padding: 5px;">No members from this list have been added to the raid.</div>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                        </div>
+                    </div>
+
+                </div>
+            </mat-tab>
+            <mat-tab label="Suicide Kings Master Lists">
+                <mat-toolbar>
+                    <span>Master Character List</span>
+                    <span class="spacer"></span>
+                    <button mat-button color="accent" [disabled]="!hasSelectedInMaster" (click)="addSelectedToRaid()"><mat-icon>person_add</mat-icon> Add Selected to Raid</button>
+                </mat-toolbar>
+                <div class="tab-content">
+
+
+                    <ng-template [ngIf]="sortByAlpha" [ngIfElse]="skMasterLists">
+                        
+                        <div class="flex-column">
+                            <div style="width: 400px;"><button mat-button (click)="sortByAlpha = false"><mat-icon>apps</mat-icon> Show Suicide Kings Lists</button></div>
+                            <p style="width: 400px;">A list of all characters from all lists in the current raid.  Select the characters and click "Add Selected to Raid" to move these characters to the raid.</p>
+                            <table style="width: 400px;">
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>Class</th>
+                                    <th>Rank</th>
+                                </tr>
+                                <tr *ngFor="let character of masterCharacterList; let i = index">
+                                    <td><mat-checkbox [(ngModel)]="character.selected" name="cbxSelected_{{i}}" [disabled]="character.disabled"></mat-checkbox></td>
+                                    <td class="pointer" (click)="toggleSelectCharacter(character)" [ngClass]="{'disabled': character.disabled}">{{character.name}}</td>
+                                    <td><span class="pointer faded character-level" (click)="toggleSelectCharacter(character)" [ngClass]="{'disabled': character.disabled}">[{{character.level > 0 ? character.level.toString() : 'n/a'}}]</span>{{character.class ? character.class : 'n/a'}}</td>
+                                    <td>{{getGuildRank(character.name)}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </ng-template>
+                    <ng-template #skMasterLists>
+                        <div style="margin: 10px;">
+                            <button mat-button (click)="sortByAlpha = true"><mat-icon>sort_by_alpha</mat-icon> Show Character List</button>
+                        </div>
+                        <div class="flex-grid">
+                            <div *ngFor="let master of selectedMasterLists">
+                                <h2>{{master.name}}</h2>
+                                <table>
+                                    <tr>
+                                        <th></th>
+                                        <th>Name</th>
+                                        <th>Class</th>
+                                        <th>Rank</th>
+                                    </tr>
+                                    <tr *ngFor="let character of master.list; let i = index">
+                                        <td><mat-checkbox [(ngModel)]="character.selected" name="cbxSelected_{{i}}" [disabled]="character.inRaid"></mat-checkbox></td>
+                                        <td class="pointer" (click)="selectSkCharacter(character)" [ngClass]="{'disabled': character.inRaid}">{{character.name}}</td>
+                                        <td><span class="pointer faded character-level" (click)="selectSkCharacter(character)" [ngClass]="{'disabled': character.inRaid}">[{{character.level > 0 ? character.level.toString() : 'n/a'}}]</span>{{character.class ? character.class : 'n/a'}}</td>
+                                        <td>{{getGuildRank(character.name)}}</td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </div>
+                    </ng-template>
+                    
+
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </section>
+    <footer>
+        <button mat-button (click)="save()">Save</button>
+        <button mat-button color="warn" (click)="closeModal()">Cancel</button>
+    </footer>
+</div>
+<input type="file" #fileSelector style="display:none;" accept="*.txt" (change)="fileSelected($event)" />

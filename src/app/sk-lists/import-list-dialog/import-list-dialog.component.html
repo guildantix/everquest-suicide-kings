@@ -1,0 +1,41 @@
+<h2 mat-dialog-title>Import Suicide Kings Master List</h2>
+
+<mat-dialog-content>
+
+    <ng-template [ngIf]="step === 0">
+        <p>Paste in the Numerical or Alphabetical list from Discord.</p>
+        <mat-form-field style="width: 100%;">
+            <mat-label>Numerical Discord List</mat-label>
+            <textarea matInput [(ngModel)]="discordText" rows="10"></textarea>
+            <mat-hint>Copy only the .Numerical or .Alphabetical list (but not both) posted in discord and paste that value into the text area.</mat-hint>
+        </mat-form-field>
+    </ng-template>
+
+    <ng-template [ngIf]="step === 1">
+        <p>Review the list to ensure accuracy before completing the action.  Once the import is completed, the change is <strong>permanent</strong>.</p>
+        
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Class</th>
+            </tr>
+            <tr *ngFor="let character of list">
+                <td>{{character.name}}</td>
+                <td><span class="faded character-level">[{{character.level > 0 ? character.level.toString() : 'n/a'}}]</span>{{character.class ? character.class : 'n/a'}}</td>
+            </tr>
+        </table>
+
+        <p class="color-red" *ngIf="rosterWarning">Uploading the latest guild roster dump may provide level and class information for the listed characters.</p>
+    
+    </ng-template>
+    
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no" color="warn">Cancel</button>
+    <button mat-button (click)="parseList()" class="t-confirm-no" *ngIf="step === 0">Continue</button>
+    <button mat-button (click)="importList()" class="t-confirm-no" *ngIf="step === 1">Import List</button>
+
+</mat-dialog-actions>

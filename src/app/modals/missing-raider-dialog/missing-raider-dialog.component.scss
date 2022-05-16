@@ -1,0 +1,29 @@
+.container {
+    display: flex;
+    justify-content: space-between;
+
+    > mat-form-field {
+        flex: 1 0 auto;
+        align-self: flex-start;
+        margin: 5px;
+    }
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+mat-select.inline-input {
+    background-color: #1E1E1E;
+    border: 1px solid #121212;
+    border-radius: 3px;
+    width: 95%;
+    color: #aeaeae;
+    outline: none;
+    font-size: 12px;
+    padding: 4px;
+    margin: 1px;
+}

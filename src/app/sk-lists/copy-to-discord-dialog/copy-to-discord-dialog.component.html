@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>Copy to Discord</h2>
+
+<mat-dialog-content>
+
+    <div *ngFor="let text of discordTexts" >
+        <div style="display: flex;">
+            <div class="code-view" [innerHTML]="filterText(text.alphaText)"></div>
+            <div style="padding: 15px;"><button mat-button (click)="copyText(text.alphaText)">Copy</button></div>
+        </div>
+        <div style="display: flex;">
+            <div class="code-view" [innerHTML]="filterText(text.numericalText)"></div>
+            <div style="padding: 15px;"><button mat-button (click)="copyText(text.numericalText)">Copy</button></div>
+        </div>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no">Close</button>
+
+</mat-dialog-actions>
