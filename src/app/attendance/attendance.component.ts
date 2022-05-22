@@ -49,14 +49,21 @@ export class AttendanceComponent implements OnInit {
     public selectedClass: string = null;
 
     public get filteredRoster(): IAttendance[] {
+
         return _.filter( this.roster, ( f: IAttendance ) =>
-            !f.placeholder && ( this.searchTerm == null || f.name?.toLowerCase().indexOf( this.searchTerm.toLowerCase() ) > -1 ) &&
+            !f.placeholder &&
+            ( this.searchTerm == null || f.name?.toLowerCase().indexOf( this.searchTerm.toLowerCase() ) > -1 ) &&
             ( this.showNonRaiders || f.totalRaids > 0 ) &&
-            (this.selectedRank == null || f.rank === this.selectedRank) &&
-            (this.selectedClass == null || f.rank === this.selectedClass) );
+            ( this.selectedRank == null || f.rank === this.selectedRank ) &&
+            ( this.selectedClass == null || f.class === this.selectedClass ) );
+        
     }
 
-    constructor( private ipcService: IpcService, private dialogService: DialogService, private dialog: MatDialog ) { }
+    constructor(
+        private ipcService: IpcService,
+        private dialogService: DialogService,
+        private dialog: MatDialog
+    ) { }
 
     ngOnInit() {
         this.ipcService.getValue<number>( 'raidTrackingCount' ).subscribe( raidTrackingCount => this.raidTrackingCount = raidTrackingCount );
@@ -87,7 +94,7 @@ export class AttendanceComponent implements OnInit {
             this.listsDb = results.masterLists;
             this.rankOptions = _.uniq( results.roster.map( f => f.rank ) ).filter( f => f != null );
             this.classOptions = _.uniq( results.roster.map( f => f.class ) ).filter( f => f != null );
-
+            
             let now = new Date( new Date().toISOString() );
             let thirtyDays = DateUtilities.addDays( now, -30 );
             let sixtyDays = DateUtilities.addDays( now, -60 );
