@@ -5,6 +5,7 @@ import { map, catchError } from 'rxjs/operators';
 import { DataTickModel, ListsDatabase, MasterSuicideKingsList, GuildMember, Raid } from './core.model';
 import { GinaConfiguration, GinaTriggerGroups } from './gina.model';
 import * as _ from 'lodash-es';
+import { UpdateInfo } from 'electron-updater';
 
 @Injectable( { providedIn: 'root' })
 export class IpcService {
@@ -19,11 +20,20 @@ export class IpcService {
     private _characterJoinedRaidObservers: Observer<string>[] = [];
     private _bidStartedObservers: Observer<string>[] = [];
     private _raidDumpObservers: Observer<string>[] = [];
+    private _updateAvailableObservers: Observer<UpdateInfo>[] = [];
 
     constructor( private ngZone: NgZone ) {
         if ( ( <any>window ).require ) {
             try {
                 this.ipc = ( <any>window ).require( 'electron' ).ipcRenderer;
+
+                this.ipc.on( 'update_downloaded', ( event: any, data: UpdateInfo ) => {
+                    ngZone.run( () => {
+                        this._updateAvailableObservers?.forEach( f => {
+                            f.next( data );
+                        } );
+                    } );
+                } );
 
                 this.ipc.on( 'tick', ( event: any, data: DataTickModel ) => {
                     ngZone.run( () => {
@@ -87,6 +97,14 @@ export class IpcService {
         } else {
             console.warn( 'App not running inside Electron!' );
         }
+    }
+
+    public updateAvailable(): Observable<UpdateInfo> {
+        let obs: Observable<UpdateInfo> = new Observable<UpdateInfo>( ( observer: Observer<UpdateInfo> ) => {
+            this._updateAvailableObservers.push( observer );
+        } );
+
+        return obs;
     }
 
     public masterListsUpdated(): Observable<ListsDatabase> {
@@ -199,6 +217,10 @@ export class IpcService {
 
     public quitApp(): void {
         this.ipc.send( 'app:quit' );
+    }
+
+    public quitAndInstallUpdate(): void {
+        this.ipc.send( 'app:restart', null );
     }
 
     public minimizeApp(): void {
