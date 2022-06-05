@@ -26,12 +26,12 @@ $bg-extreme-dark: #191919;
 
 .dark-theme {
     .hover-blue {
-        &:hover {
+        &:not([disabled]):hover {
             color: $color-blue;
         }
     }
     .hover-red {
-        &:hover {
+        &:not([disabled]):hover {
             color: $color-red;
         }
     }
