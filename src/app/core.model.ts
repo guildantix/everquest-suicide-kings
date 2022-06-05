@@ -152,7 +152,11 @@ export enum HistoryTypes {
     
     Suicide = 0,
     MainChange = 1,
-
+    JoinRaid = 2,
+    LeaveRaid = 3,
+    StartRaid = 4,
+    EndRaid = 5,
+    
 }
 
 export class SuicideKingsListHistory {
@@ -175,6 +179,68 @@ export class SuicideKingsListHistory {
     public newMain: string;
     /** If true, this suicide will not be counted for attendance. */
     public excludeAttendance: boolean = false;
+    /** The description of the event. */
+    public description?: string;
+    /** The name of the character that performed the event. */
+    public characterName?: string;
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Creates a new suicide kings history item for player attending a raid.
+     * 
+     * @returns Returns the new history item.
+     * 
+     * @param eventType The attend event type.
+     * @param timestamp The date and time of the event.
+     * @param name The name of the raider.
+     * @param raidId The id of the raid.
+     * @param fromDump True, if the attendance was tracked via a dump file.
+     * @param master The master list they are being added/removed to/from.
+     * @param raidList The raid list for the raid.
+     */
+    public static CreateAttendRaidEvent(
+        eventType: HistoryTypes,
+        timestamp: string,
+        name: string,
+        raidId: string,
+        fromDump: boolean,
+        master: MasterSuicideKingsList,
+        raidList: RaidList
+    ): SuicideKingsListHistory {
+        let history = new SuicideKingsListHistory();
+
+        history.raidId = raidId;
+        history.timestamp = timestamp;
+        history.characterName = name;
+        history.suicideIndex = master.list.findIndex( f => f.name === name );
+        history.excludeAttendance = true;
+        history.historyType = eventType;
+
+        if ( eventType !== HistoryTypes.StartRaid ) {
+            history.activeIndices = SuicideKingsListHistory.calculateActiveIndices( raidList, master );
+            history.list = ListDescription.fromSuicideMasterList( master );
+        }
+        
+        if ( eventType === HistoryTypes.JoinRaid ) {
+            history.description = `${name} joined ${fromDump ? 'via dump' : 'manually'}`;
+        } else if ( eventType === HistoryTypes.StartRaid ) {
+            history.description = `${name} started ${fromDump ? 'via dump' : 'manually'}`;
+        } else if ( eventType === HistoryTypes.LeaveRaid ) {
+            history.description = `${name} left ${fromDump ? 'via dump' : 'manually'}`;
+        } else if ( eventType === HistoryTypes.EndRaid ) {
+            history.description = `${name} ended ${fromDump ? 'via dump' : 'manually'}`;
+        }
+
+        return history;
+    }
 
 
 
@@ -330,7 +396,7 @@ export class SuicideKingsListHistory {
                 let guildMember = roster.find( f => f.name === item.name );
                 if ( guildMember ) {
                     skchar.class = guildMember.class;
-                    skchar.inRaid = master.list.find( f => f.name === guildMember.name )?.inRaid === true;
+                    skchar.inRaid = master.list.find( f => f.name === guildMember.name )?.inRaid === true; // MARKER Leave event, they aren't in raid.
                     skchar.level = guildMember.level;
                 }
                 masterList[ item.skListIndex ] = skchar;
@@ -381,6 +447,8 @@ export class SuicideKingsListHistory {
                 this.executeMainChange( master, history[ i ], roster );
 
             }
+
+            // MARKER Execute join/leave history actions. inRaid true/false.
         }
     }
 
