@@ -14,6 +14,7 @@ var enableDevMode = true;
 GH_TOKEN = "e3460400ae1273a5cac83e1b86a5aceae7f8bab7";
 
 const database = new Database();
+const updateCheckInterval = 10 * 60 * 1000;
 /** @type {WindowManager} */
 const windowManager = new WindowManager(__dirname);
 
@@ -67,11 +68,10 @@ function createWindow() {
     } );
 
     mainWindow.webContents.once( 'dom-ready', () => {
-        autoUpdater.checkForUpdatesAndNotify().then( result => {
-            mainWindow.webContents.send( 'console:log', result );
-        }, error => {
-            mainWindow.webContents.send( 'console:log', error );
-        } );
+        autoUpdater.checkForUpdates();
+        setInterval( () => {
+            autoUpdater.checkForUpdates();
+        }, updateCheckInterval );
         sendTick();
     } );
 
@@ -162,12 +162,18 @@ function sendTick() {
 
 }
 
-autoUpdater.signals.updateDownloaded( () => {
-    mainWindow.webContents.send( 'update_downloaded' );
+/** @type {import("electron-updater").UpdateInfo} */
+var updateInfo = null;
+
+autoUpdater.on( 'update-downloaded', () => {
+    // log.info( 'update-downloaded executed' );
+    mainWindow.webContents.send( 'update_downloaded', updateInfo );
 } );
 
-autoUpdater.on( 'update-available', () => {
-    mainWindow.webContents.send( 'update_available' );
+autoUpdater.on( 'update-available', info => {
+    // log.info( info );
+    updateInfo = info;
+    mainWindow.webContents.send( 'update_available', info );
 } );
 
 ipcMain.on( 'app:restart', () => {

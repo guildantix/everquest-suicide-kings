@@ -18,8 +18,10 @@ export class MasterListHistoryDialogComponent implements OnInit {
     public searchTerm: string;
     public searchDate: Date = null;
     public raidDates: Date[] = [];
+    public showJoinLeaveData: boolean = false;
+    public showStartData: boolean = false;
     public get history(): SuicideKingsListHistory[] {
-        let data = this.data?.history?.filter( f => f.historyType === HistoryTypes.Suicide ) ?? [];
+        let data = this.data?.history?.filter( f => f.historyType === HistoryTypes.Suicide || f.historyType === HistoryTypes.StartRaid || f.historyType === HistoryTypes.LeaveRaid || f.historyType === HistoryTypes.JoinRaid ) ?? [];
 
         if ( this.searchDate ) {
             data = data.filter( h => {
@@ -29,13 +31,26 @@ export class MasterListHistoryDialogComponent implements OnInit {
         }
 
         if ( this.searchTerm ) {
+            let s = this.searchTerm.toLowerCase();
             data = data.filter( h => {
-                return h.list[ h.suicideIndex ].name.toLowerCase().indexOf( this.searchTerm.toLowerCase() ) > -1;
+                return ( h.historyType === HistoryTypes.Suicide && h.list[ h.suicideIndex ].name.toLowerCase().indexOf( s ) > -1 )
+                    || ( h.characterName?.toLowerCase().indexOf( s ) > -1 );
             } );
         }
 
+        if ( !this.showJoinLeaveData ) {
+            data = data.filter( h => h.historyType === this.historyTypes.Suicide );
+        }
+
+        if ( !this.showStartData ) {
+            _.remove( data, h => h.historyType === HistoryTypes.StartRaid );
+        }
+
+        
+
         return _.orderBy( data, f => new Date( f.timestamp ), [ 'desc' ] );
     }
+    public historyTypes: typeof HistoryTypes = HistoryTypes;
 
     constructor(
         public dialogRef: MatDialogRef<MasterListHistoryDialogComponent>,
@@ -69,6 +84,28 @@ export class MasterListHistoryDialogComponent implements OnInit {
 
 
 
+    /**
+     * Returns a class name for the given item, used to style the character name in the history list.
+     * 
+     * @param item The item to evaluate.
+     */
+    public getHistoryItemCssClassName( item: SuicideKingsListHistory ): string {
+        if ( item.historyType === HistoryTypes.JoinRaid || item.historyType === HistoryTypes.StartRaid ) {
+            return 'color-green';
+        } else if ( item.historyType === HistoryTypes.LeaveRaid || item.historyType === HistoryTypes.EndRaid ) {
+            return 'color-red';
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Shows the note associated with a history record.
@@ -76,14 +113,18 @@ export class MasterListHistoryDialogComponent implements OnInit {
      * @param history The history record.
      */
     showHistoryNote( history: SuicideKingsListHistory ) {
-        let name = history.list[ history.suicideIndex ].name;
+        let name = history.historyType === HistoryTypes.Suicide ? history.list[ history.suicideIndex ].name : history.characterName;
         this.ipcService.getGuildRoster().subscribe( roster => {
-            let member = roster.find( f => f.name === name );
-            let suicide = member.suicides.find( f => f.raidId === history.raidId && f.date === history.timestamp );
-            if ( suicide && suicide.item ) {
-                this.dialogService.showNoteDialog( 'Suicide Note', suicide.item );
+            if ( history.historyType === HistoryTypes.Suicide ) {
+                let member = roster.find( f => f.name === name );
+                let suicide = member.suicides.find( f => f.raidId === history.raidId && f.date === history.timestamp );
+                if ( suicide && suicide.item ) {
+                    this.dialogService.showNoteDialog( 'Suicide Note', suicide.item );
+                } else {
+                    this.dialogService.showInfoDialog( 'Suicide Note Missing', 'There was no description for this event.' );
+                }
             } else {
-                this.dialogService.showInfoDialog( 'Suicide Note Missing', 'There was no description for this event.' );
+                this.dialogService.showNoteDialog( 'History Note', history.description );
             }
         } );
     }
