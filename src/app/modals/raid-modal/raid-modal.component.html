@@ -143,7 +143,7 @@
                                 </tr>
                                 <tr *ngFor="let raider of raid.list; let i = index">
                                     <td>{{raider.skListIndex + 1}}</td>
-                                    <td><mat-checkbox [(ngModel)]="raider.selected" name="cbxSelected_{{i}}"></mat-checkbox></td>
+                                    <td><mat-checkbox [(ngModel)]="raider.selected" name="cbxSelected_{{i}}" (click)="removeAutoSelectedRaider(raider.name)"></mat-checkbox></td>
                                     <td class="pointer" (click)="selectRaider(raider)">{{raider.name}}</td>
                                     <td><span class="pointer faded character-level" (click)="selectRaider(raider)">[{{raider.level > 0 ? raider.level.toString() : 'n/a'}}]</span>{{raider.class ? raider.class : 'n/a'}}</td>
                                     <td>{{getGuildRank(raider.name)}}</td>

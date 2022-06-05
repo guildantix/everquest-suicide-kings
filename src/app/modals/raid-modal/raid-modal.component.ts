@@ -16,6 +16,7 @@ import { MissingRaiderModel, MissingRaidersModel } from '../missing-raider-dialo
 import { ICharacterMultiList } from '../modals.model';
 import { MissingRaiderDialogComponent } from '../missing-raider-dialog/missing-raider-dialog.component';
 import { MasterListHistoryDialogComponent } from 'src/app/sk-lists/master-list-history-dialog/master-list-history-dialog.component';
+import { UniqueList } from 'src/app/core/unique-list';
 
 const raidReactivationHours = 24 * 365 * 1;
 
@@ -52,6 +53,7 @@ export class RaidModalComponent implements OnInit {
     public useSuicideGroups: boolean = false;
     public suicideGroups: SuicideGroup[] = [];
     public singleListBidAccept: boolean = false;
+    public autoSelectedRaiders: UniqueList<string> = new UniqueList<string>();
 
     public get selectedMasterLists(): MasterSuicideKingsList[] {
         // Possible error could occur if the selected master lists change after the raid has begun.
@@ -319,6 +321,7 @@ export class RaidModalComponent implements OnInit {
     public setNameLeftRaid( name: string ) {
             
         this.selectCharacterInRaid( name );
+        this.autoSelectedRaiders.add( name );
 
         if ( this.namesLeftRaid.indexOf( name ) === -1 ) {
             this.namesLeftRaid.push( name );
@@ -726,8 +729,21 @@ export class RaidModalComponent implements OnInit {
     
     /**
      * Adds the selected characters to the raid.
+     * 
+     * @param fromDump If the selected raiders were added automaticaly by parsing a raid dump file.
      */
-    addSelectedToRaid() {
+    addSelectedToRaid( fromDump?: boolean ) {
+        
+        fromDump = fromDump ? true : false;
+
+        let raidStarting = true;
+        this.raid.lists?.forEach( list => {
+            if ( list.list?.length > 0 ) {
+                raidStarting = false;
+            }
+        } );
+
+        let now = ( new Date() ).toISOString();
 
         this.listsDatabase.masterLists.forEach( master => {
             if ( master.selected ) {
@@ -735,7 +751,23 @@ export class RaidModalComponent implements OnInit {
                     if ( character.selected ) {
                         let i = this.raid.lists.findIndex( f => f.masterListId === master.listId );
                         if ( !_.some( this.raid.lists[ i ].list, f => f.name === character.name ) ) {
+                            
+                            // Add this character to the raid list.
                             this.raid.lists[ i ].list.push( RaidMember.fromSuicideKingsCharacter( character, listIndex ) );
+
+                            // Create the Start/Join event
+                            let history = SuicideKingsListHistory
+                                .CreateAttendRaidEvent(
+                                    raidStarting ? HistoryTypes.StartRaid : HistoryTypes.JoinRaid,
+                                    now,
+                                    character.name,
+                                    this.raid.raidId,
+                                    fromDump, master,
+                                    this.raid.lists[ i ] );
+
+                            // Add the join event to the list history.
+                            master.history = master.history ? master.history : [];
+                            master.history.push( history );
                         }
                         character.inRaid = true;
                         character.selected = false;
@@ -765,14 +797,35 @@ export class RaidModalComponent implements OnInit {
      * Removes the selected character(s) from the raid.
      */
     removeSelectedFromRaid() {
+        let now = ( new Date() ).toISOString();
+
         this.raid.lists.forEach( raidList => {
             let mi = this.listsDatabase.masterLists.findIndex( f => f.listId === raidList.masterListId );
+            let master = this.listsDatabase.masterLists[ mi ];
             let removed = _.remove( raidList.list, f => f.selected );
             removed.forEach( raider => {
                 let i = this.listsDatabase.masterLists[ mi ].list.findIndex( f => f.name === raider.name );
                 this.listsDatabase.masterLists[ mi ].list[ i ].inRaid = false;
                 this.listsDatabase.masterLists[ mi ].list[ i ].selected = false;
+                
+                // Create the leave event.
+                let history = SuicideKingsListHistory
+                    .CreateAttendRaidEvent(
+                        HistoryTypes.LeaveRaid,
+                        now,
+                        raider.name,
+                        this.raid.raidId,
+                        this.autoSelectedRaiders.contains( raider.name ),
+                        master,
+                        raidList );
+
+                // Add the join event to the list history.
+                master.history = master.history ? master.history : [];
+                master.history.push( history );
+
+                this.autoSelectedRaiders.remove( raider.name );
             } );
+
             _.remove( raidList.bidders, f => f.selected );
         } );
         this.updateMasterCharacterList();
@@ -825,77 +878,96 @@ export class RaidModalComponent implements OnInit {
      */
     parseRaidDumpData( data: string ) {
         let csv = CsvUtilities.parseCsvData( data );
-            let raidRoster: RaidAttendee[] = [];
+        let raidRoster: RaidAttendee[] = [];
     
-            csv.forEach( raider => {
-                let attendee = new RaidAttendee();
+        csv.forEach( raider => {
+            let attendee = new RaidAttendee();
     
-                attendee.name = raider[ raidKeyMap.name ];
+            attendee.name = raider[ raidKeyMap.name ];
     
-                if ( attendee.name ) {
+            if ( attendee.name ) {
 
-                    attendee.group = +raider[ raidKeyMap.group ];
-                    attendee.level = +raider[ raidKeyMap.level ];
-                    attendee.class = raider[ raidKeyMap.class ];
-                    attendee.raidRank = raider[ raidKeyMap.raidRank ];
-                    // attendee.inList = raider[ raidKeyMap.inList ];
+                attendee.group = +raider[ raidKeyMap.group ];
+                attendee.level = +raider[ raidKeyMap.level ];
+                attendee.class = raider[ raidKeyMap.class ];
+                attendee.raidRank = raider[ raidKeyMap.raidRank ];
+                // attendee.inList = raider[ raidKeyMap.inList ];
     
-                    raidRoster.push( attendee );
-                }
-    
-            } );
-
-
-            // First, remove raid attendees that are not in the dump file.
-            let hasMissingFromDump = false;
-            this.raid.lists.forEach( raidList => {
-                raidList.list.forEach( raider => {
-                    if ( !_.some( raidRoster, rost => rost.name === raider.name ) ) {
-                        raider.selected = true;
-                        hasMissingFromDump = true;
-                    }
-                } );
-            } );
-            
-            // Next, add existing members that are not in the raid, to the raid.
-            raidRoster.forEach( raider => this.selectRaidAttendee( raider ) );
-            this.addSelectedToRaid();
-
-            // determine if new members need to be added to the list (ask the user to confirm/select)
-            let notInMasterList: RaidAttendee[] = [];
-            raidRoster.forEach( attendee => {
-                let isMissing = !_.some( this.listsDatabase.masterLists, m => m.selected && _.some( m.list, c => c.name === attendee.name ) );
-                if ( isMissing ) {
-                    notInMasterList.push( attendee );
-                }
-            } );
-
-            if ( notInMasterList.length > 0 ) {
-                this.dialog.open<MissingRaiderDialogComponent, MissingRaidersModel, MissingRaidersModel>( MissingRaiderDialogComponent, {
-                    width: '650px',
-                    data: { listsDatabase: this.listsDatabase, raiders: notInMasterList as MissingRaiderModel[] },
-                    panelClass: 'app-dialog',
-                } ).afterClosed().subscribe( raiderListAssignments => {
-                    if ( raiderListAssignments !== null ) {
-
-                        this.ipcService.getGuildRoster().subscribe( roster => {
-                            raiderListAssignments.raiders.forEach( newRaider => {
-                                this.assignAttendeeToLists( roster, newRaider );
-                            } );
-        
-                        } );
-                        
-                        this.save();
-                    }
-                    if ( hasMissingFromDump ) {
-                        this.dialogService.showInfoDialog( 'Missing Members', [ 'There are some members that are in the raid but were not found in the output file.', 'The characters that were missing from the output file have been automatically selected for removal.', 'To remove these characters from the raid, please click on the "Remove Selected from Raid" button.' ], 'raid-modal:missing-members-warning' );
-                    }
-                } );
-                
-            } else if ( hasMissingFromDump ) {
-                this.dialogService.showInfoDialog( 'Missing Members', [ 'There are some members that are in the raid but were not found in the output file.', 'The characters that were missing from the output file have been automatically selected for removal.', 'To remove these characters from the raid, please click on the "Remove Selected from Raid" button.' ], 'raid-modal:missing-members-warning' );
+                raidRoster.push( attendee );
             }
+    
+        } );
 
+
+        // First, remove raid attendees that are not in the dump file.
+        let hasMissingFromDump = false;
+        this.raid.lists.forEach( raidList => {
+            raidList.list.forEach( raider => {
+                if ( !_.some( raidRoster, rost => rost.name === raider.name ) ) {
+                    raider.selected = true;
+                    hasMissingFromDump = true;
+                    this.autoSelectedRaiders.add( raider.name );
+                }
+            } );
+        } );
+            
+        // Next, add existing members that are not in the raid, to the raid.
+        raidRoster.forEach( raider => this.selectRaidAttendee( raider ) );
+        this.addSelectedToRaid( true );
+
+        // determine if new members need to be added to the list (ask the user to confirm/select)
+        let notInMasterList: RaidAttendee[] = [];
+        raidRoster.forEach( attendee => {
+            let isMissing = !_.some( this.listsDatabase.masterLists, m => m.selected && _.some( m.list, c => c.name === attendee.name ) );
+            if ( isMissing ) {
+                notInMasterList.push( attendee );
+            }
+        } );
+
+        if ( notInMasterList.length > 0 ) {
+            this.dialog.open<MissingRaiderDialogComponent, MissingRaidersModel, MissingRaidersModel>( MissingRaiderDialogComponent, {
+                width: '650px',
+                data: { listsDatabase: this.listsDatabase, raiders: notInMasterList as MissingRaiderModel[] },
+                panelClass: 'app-dialog',
+            } ).afterClosed().subscribe( raiderListAssignments => {
+                if ( raiderListAssignments !== null ) {
+
+                    this.ipcService.getGuildRoster().subscribe( roster => {
+                        raiderListAssignments.raiders.forEach( newRaider => {
+                            this.assignAttendeeToLists( roster, newRaider );
+                        } );
+        
+                    } );
+                        
+                    this.save();
+                }
+                if ( hasMissingFromDump ) {
+                    this.dialogService.showInfoDialog( 'Missing Members', [ 'There are some members that are in the raid but were not found in the output file.', 'The characters that were missing from the output file have been automatically selected for removal.', 'To remove these characters from the raid, please click on the "Remove Selected from Raid" button.' ], 'raid-modal:missing-members-warning' );
+                }
+            } );
+                
+        } else if ( hasMissingFromDump ) {
+            this.dialogService.showInfoDialog( 'Missing Members', [ 'There are some members that are in the raid but were not found in the output file.', 'The characters that were missing from the output file have been automatically selected for removal.', 'To remove these characters from the raid, please click on the "Remove Selected from Raid" button.' ], 'raid-modal:missing-members-warning' );
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Removes the specified raider from auto-selected status.
+     * 
+     * @param name The name of the raider
+     */
+    public removeAutoSelectedRaider( name: string ) {
+        this.autoSelectedRaiders.remove( name );
     }
 
 
@@ -911,7 +983,6 @@ export class RaidModalComponent implements OnInit {
      * Creates an empty raid based on the user-selected master lists.
      */
     createRaid() {
-        
         let raid = new Raid();
 
         raid.raidId = nanoid();
