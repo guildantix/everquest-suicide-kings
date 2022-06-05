@@ -386,7 +386,10 @@ export class SuicideKingsListHistory {
 
         } else {
             let history = master.history[ targetHistoryIndex ];
+            // Leave event, they aren't in raid.
+            let leaveEvent = history.historyType === HistoryTypes.LeaveRaid || history.historyType === HistoryTypes.EndRaid;
             let masterList: SuicideKingsCharacter[] = [];
+
             // Each suicide history stores the value of the master list prior 
             // to suicide.
             history.list.forEach( item => {
@@ -396,7 +399,7 @@ export class SuicideKingsListHistory {
                 let guildMember = roster.find( f => f.name === item.name );
                 if ( guildMember ) {
                     skchar.class = guildMember.class;
-                    skchar.inRaid = master.list.find( f => f.name === guildMember.name )?.inRaid === true; // MARKER Leave event, they aren't in raid.
+                    skchar.inRaid = master.list.find( f => f.name === guildMember.name )?.inRaid === !leaveEvent;
                     skchar.level = guildMember.level;
                 }
                 masterList[ item.skListIndex ] = skchar;
@@ -446,9 +449,13 @@ export class SuicideKingsListHistory {
 
                 this.executeMainChange( master, history[ i ], roster );
 
+            } else if ( [ HistoryTypes.StartRaid, HistoryTypes.JoinRaid, HistoryTypes.LeaveRaid, HistoryTypes.EndRaid ].indexOf( history[ i ].historyType ) > -1 ) {
+
+                this.executeNullHistory( master, history[ i ] );
+
             }
 
-            // MARKER Execute join/leave history actions. inRaid true/false.
+            
         }
     }
 
@@ -485,6 +492,44 @@ export class SuicideKingsListHistory {
         for ( let i = removeIndices.length - 1; i >= 0; i-- ) {
             master.list.splice( removeIndices[ i ], 1 );
         }
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Executes a null history item, which does not affect the condition of the master list.
+     * 
+     * @param master The current state of the master list.
+     * @param history The executing history item.
+     * @param roster The current guild roster.
+     */
+    private static executeNullHistory( master: MasterSuicideKingsList, history: SuicideKingsListHistory ) {
+
+        let currentSkIndex = master.list.findIndex( f => f.name === history.oldMain );
+
+        // Create a new main change history record.
+        let newHistory = new SuicideKingsListHistory();
+        newHistory.raidId = history.raidId;
+        newHistory.timestamp = history.timestamp ? history.timestamp : ( new Date() ).toISOString();
+        newHistory.characterName = history.characterName;
+        newHistory.suicideIndex = currentSkIndex;
+        newHistory.excludeAttendance = history.excludeAttendance;
+        newHistory.historyType = history.historyType;
+        newHistory.activeIndices = history.activeIndices?.length > 0 ? history.activeIndices.slice() : [];
+        newHistory.list = history.list?.length > 0 ? ListDescription.fromSuicideMasterList( master ) : [];
+        newHistory.description = history.description;
+
+        // Insert the new history into the record.
+        master.history = master.history ? master.history : [];
+        master.history.push( newHistory );
+        
     }
 
 
