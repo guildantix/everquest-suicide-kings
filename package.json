@@ -1,6 +1,6 @@
 {
   "name": "everquest-suicide-kings",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "main": "main.js",
   "scripts": {
     "tsc": "tsc",
@@ -68,7 +68,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/guildantix/everquest-suicide-kings.git",
-    "token": "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"
+    "token": "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"
   },
   "build": {
     "productName": "EQ Suicide Kings",
@@ -81,7 +81,7 @@
       "publish": [
         {
           "provider": "github",
-          "token": "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"
+          "token": "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"
         }
       ]
     },
