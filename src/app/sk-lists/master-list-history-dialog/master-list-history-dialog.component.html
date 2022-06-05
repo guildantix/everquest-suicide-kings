@@ -23,6 +23,11 @@
         </mat-form-field>
 
     </div>
+    <div class="filters" style="margin: 15px 0;">
+        <mat-checkbox [(ngModel)]="showJoinLeaveData" name="showJoinLeaveData">Show Join/Leave Events</mat-checkbox>
+        <span class="spacer"></span>
+        <mat-checkbox [(ngModel)]="showStartData" name="showStartData" *ngIf="showJoinLeaveData">Include Start Raid Events</mat-checkbox>
+    </div>
 
     <app-infinite-scroller #infiniteScroller [data]="history">
         <table>
@@ -32,12 +37,15 @@
                 <th></th>
             </tr>
             <tr *ngFor="let h of infiniteScroller.data">
-                <td><span class="pointer hover-blue" (click)="searchTerm = h.list[h.suicideIndex].name">{{h.list[h.suicideIndex].name}}</span></td>
+                <td *ngIf="h.historyType === historyTypes.Suicide; then suicide else other"></td>
+                <ng-template #suicide><span class="pointer hover-blue" (click)="searchTerm = h.list[h.suicideIndex].name">{{h.list[h.suicideIndex].name}}</span></ng-template>
+                <ng-template #other><span class="pointer hover-blue {{getHistoryItemCssClassName(h)}}" (click)="searchTerm = h.characterName">{{h.characterName}}</span></ng-template>
                 <td class="subtle-date">{{h.timestamp | date:'short'}}</td>
                 <td class="pointer" style="padding-top: 4px;">
-                    <a class="a-btn parent-hover-only hover-blue" (click)="showHistoryNote(h)"><mat-icon fontSet="material-icons-outlined">description</mat-icon></a>
-                    <a class="a-btn parent-hover-only hover-blue" (click)="confirmSwapName(h)"><mat-icon fontSet="material-icons-outlined">change_circle</mat-icon></a>
-                    <a class="a-btn parent-hover-only hover-red" (click)="confirmRollback(h)"><mat-icon>remove_circle_outline</mat-icon></a>
+                    <button mat-icon-button class="a-btn parent-hover-only hover-blue" (click)="showHistoryNote(h)"><mat-icon fontSet="material-icons-outlined">description</mat-icon></button>
+                    <!-- TODO: Allow edit functions for join/leave but not start/end events. -->
+                    <button mat-icon-button class="a-btn parent-hover-only hover-blue" (click)="confirmSwapName(h)" [disabled]="h.historyType !== historyTypes.Suicide"><mat-icon fontSet="material-icons-outlined">change_circle</mat-icon></button>
+                    <button mat-icon-button class="a-btn parent-hover-only hover-red" (click)="confirmRollback(h)" [disabled]="h.historyType !== historyTypes.Suicide"><mat-icon>remove_circle_outline</mat-icon></button>
                 </td>
             </tr>
         </table>
