@@ -1,6 +1,6 @@
 {
   "name": "everquest-suicide-kings",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "main": "main.js",
   "scripts": {
     "tsc": "tsc",
