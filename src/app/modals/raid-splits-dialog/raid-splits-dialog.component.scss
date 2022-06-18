@@ -6,6 +6,18 @@
         flex: 1 0 auto;
         align-self: flex-start;
         margin: 5px;
+        max-width: 250px;
+    }
+
+    > mat-checkbox  {
+        align-self: center;
+        margin: 15px;
+    }
+
+    > button {
+        align-self: center;
+        margin: 15px;
+        min-width: 150px;
     }
 }
 

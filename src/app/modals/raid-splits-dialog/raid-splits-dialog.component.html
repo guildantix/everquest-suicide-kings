@@ -4,17 +4,25 @@
 
     <p>Select the raid dumps for each raid split.</p>
 
-    <button mat-button>Add Split</button>
+    <button mat-button (click)="addSplit()"><mat-icon>add</mat-icon> Add Split</button>
 
-    <div class="container" *ngFor="let split of data">
-        <mat-form-field>
-            <mat-label>Split Name</mat-label>
-            <input matInput [(ngModel)]="split.name" />
-        </mat-form-field>
+    <div style="margin-top: 25px;">
+        <div class="container" *ngFor="let split of data; let i = index">
+            
+            <mat-form-field>
+                <mat-label>Split Name</mat-label>
+                <input matInput [(ngModel)]="split.name" />
+            </mat-form-field>
 
-        <button mat-button>Select Split Dump</button>
+            <button mat-button (click)="fileSelector.click()">Select Dump <span style="flex: 1 1 auto;"></span><span *ngIf="split.dumpRoster !== null && split.dumpRoster !== undefined">({{split.dumpRoster.length}})</span></button>
 
-        <mat-checkbox [checked]="split.raidLeader === myName" (change)="changeSplitOwner($event.checked, split)">My Split</mat-checkbox>
+            <mat-checkbox [checked]="split.raidLeader === myName" (change)="changeSplitOwner($event.checked, split)">My Split</mat-checkbox>
+
+            <mat-checkbox [checked]="split.standby" (change)="changeStandby($event.checked, split)">Standby</mat-checkbox>
+            
+            <input type="file" #fileSelector style="display:none;" accept="*.txt" (change)="parseRaidDump(split, fileSelector)" />
+
+        </div>
     </div>
 
 </mat-dialog-content>

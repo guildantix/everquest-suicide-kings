@@ -533,14 +533,14 @@ export class RaidModalComponent implements OnInit {
 
 
 
-    
+
     /**
      * Shows the raid splits window.
      */
     addSplits() {
         this.raid.splits = this.raid.splits?.length > 0 ? this.raid.splits : [];
         this.dialog.open<RaidSplitsDialogComponent, RaidSplit[], RaidSplit[]>( RaidSplitsDialogComponent, {
-            width: '650px',
+            width: '750px',
             data: this.raid.splits,
             panelClass: 'app-dialog',
         } ).afterClosed().subscribe( splits => {
