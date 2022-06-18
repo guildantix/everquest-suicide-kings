@@ -52,10 +52,11 @@ export enum CharacterClasses {
     Paladin = 'PAL',
     Ranger = 'RNG',
     Rogue = 'ROG',
-    Shadowknight = 'SHD',
+    // Shadowknight = 'SHD',
     Shaman = 'SHM',
     Warrior = 'WAR',
     Wizard = 'WIZ',
+    'Shadow Knight' = 'SHD',
 }
 
 
@@ -845,7 +846,9 @@ export class SuicideKingsListHistory {
 
 
 export class RaidMember extends SuicideKingsCharacter {
+
     public skListIndex: number;
+    public raidIndex: number = 0;
 
     public static fromAttendee( attendee: RaidAttendee, listIndex: number ): RaidMember {
         let raidMember = new RaidMember();
@@ -921,6 +924,16 @@ export class SuicideGroup {
 
 }
 
+export class RaidSplit {
+    
+    public name: string;
+    public id: string;
+    public raiders: string[] = [];
+    public dumpFile: string;
+    public raidLeader?: string;
+    
+}
+
 
 
 
@@ -939,6 +952,7 @@ export class Raid {
     public completed: boolean = false;
     public lists: RaidList[] = [];
     public date: string;
+    public splits?: RaidSplit[];
 
 }
 
