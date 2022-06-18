@@ -848,7 +848,7 @@ export class SuicideKingsListHistory {
 export class RaidMember extends SuicideKingsCharacter {
 
     public skListIndex: number;
-    public raidIndex: number = 0;
+    public splitId?: string;
 
     public static fromAttendee( attendee: RaidAttendee, listIndex: number ): RaidMember {
         let raidMember = new RaidMember();
@@ -924,14 +924,24 @@ export class SuicideGroup {
 
 }
 
+
+
+
+
+
+
+
+
+
 export class RaidSplit {
     
     public name: string;
     public id: string;
     public raiders: string[] = [];
-    public dumpFile: string;
     public raidLeader?: string;
-    
+    public standby: boolean = false;
+    public dumpRoster?: RaidAttendee[];
+
 }
 
 
