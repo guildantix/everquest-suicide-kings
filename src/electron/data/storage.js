@@ -93,6 +93,28 @@ class Database {
             this.#data.databaseVersion = 4;
             this.storeDataFile();
             
+        } if ( this.#data.databaseVersion < 5 ) {
+            
+            // Clean up some beta roster data that found its way in.
+            let roster = this.#data.guildRoster;
+            let removal = [];
+            roster.forEach( member => {
+                if ( member.lastOnline === '' ) {
+                    removal.push( member.name );
+                }
+            } );
+
+            // Remove each beta roster member.
+            if ( removal.length > 0 ) {
+                removal.forEach( name => {
+                    let i = roster.findIndex( f => f.name === name );
+                    roster.splice( i, 1 );
+                } );
+            }
+
+            // Saves the changes made to the store.
+            this.#data.databaseVersion = 5;
+            this.storeDataFile();
         }
     }
 
