@@ -14,6 +14,7 @@ import { appRoutes } from '../ng.routes';
 import { RaidModalComponent } from './raid-modal/raid-modal.component';
 import { NewRaiderDialogComponent } from './new-raider-dialog/new-raider-dialog.component';
 import { MissingRaiderDialogComponent } from './missing-raider-dialog/missing-raider-dialog.component';
+import { RaidSplitsDialogComponent } from './raid-splits-dialog/raid-splits-dialog.component';
 
 @NgModule( {
     imports: [
@@ -35,6 +36,7 @@ import { MissingRaiderDialogComponent } from './missing-raider-dialog/missing-ra
         MissingRaiderDialogComponent,
         NewRaiderDialogComponent,
         RaidModalComponent,
+        RaidSplitsDialogComponent,
     ],
     providers: [],
 } )

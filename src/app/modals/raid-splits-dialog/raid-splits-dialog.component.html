@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Raid Splits</h2>
+
+<mat-dialog-content>
+
+    <p>Select the raid dumps for each raid split.</p>
+
+    <button mat-button>Add Split</button>
+
+    <div class="container" *ngFor="let split of data">
+        <mat-form-field>
+            <mat-label>Split Name</mat-label>
+            <input matInput [(ngModel)]="split.name" />
+        </mat-form-field>
+
+        <button mat-button>Select Split Dump</button>
+
+        <mat-checkbox [checked]="split.raidLeader === myName" (change)="changeSplitOwner($event.checked, split)">My Split</mat-checkbox>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no" color="warn">Cancel</button>
+    <button mat-button (click)="saveSplits()" class="t-confirm-no">OK</button>
+
+</mat-dialog-actions>
