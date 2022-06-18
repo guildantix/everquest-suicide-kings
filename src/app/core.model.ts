@@ -1,6 +1,15 @@
 import { StringProtocolResponse } from 'electron';
 import * as _ from 'lodash-es';
 
+
+
+
+
+
+
+
+
+
 export const ErrorCodes = {
     EqFolderNotFound: {
         code: 'EQDIRNULL',
@@ -8,9 +17,27 @@ export const ErrorCodes = {
     }
 };
 
+
+
+
+
+
+
+
+
+
 export const ErrorIds = {
     swapSuicideCharacters: 'SKHISTSWP'
 };
+
+
+
+
+
+
+
+
+
 
 export enum CharacterClasses {
     Bard = 'BRD',
@@ -31,12 +58,30 @@ export enum CharacterClasses {
     Wizard = 'WIZ',
 }
 
+
+
+
+
+
+
+
+
+
 export class BasicError {
     
     public errorCode: string;
     public message: string;
 
 }
+
+
+
+
+
+
+
+
+
 
 export enum OperatorTypes {
     
@@ -48,16 +93,42 @@ export enum OperatorTypes {
 
 }
 
+
+
+
+
+
+
+
+
+
 export class DataTickModel {
     
 }
 
-// EQ Suicide Kings
+
+
+
+
+
+
+
+
+
 
 export interface Selectable {
     selected: boolean;
     name: string;
 }
+
+
+
+
+
+
+
+
+
 
 export class SelectOption {
 
@@ -68,6 +139,16 @@ export class SelectOption {
         return a != null && b != null && a.id === b.id;
     }
 }
+
+
+
+
+
+
+
+
+
+
 export class Suicide {
     
     public date: string | null = null;
@@ -75,6 +156,15 @@ export class Suicide {
     public item: string | null = null;
 
 }
+
+
+
+
+
+
+
+
+
 
 export class GuildMember {
 
@@ -94,6 +184,15 @@ export class GuildMember {
 
 }
 
+
+
+
+
+
+
+
+
+
 export class Character implements Selectable {
     
     selected: boolean;
@@ -103,6 +202,15 @@ export class Character implements Selectable {
     disabled: boolean = false;
 
 }
+
+
+
+
+
+
+
+
+
 
 export class SuicideKingsCharacter implements Selectable {
     
@@ -116,6 +224,15 @@ export class SuicideKingsCharacter implements Selectable {
 
 }
 
+
+
+
+
+
+
+
+
+
 export class MasterSuicideKingsList implements Selectable {
     
     public listId: string;
@@ -126,12 +243,30 @@ export class MasterSuicideKingsList implements Selectable {
 
 }
 
+
+
+
+
+
+
+
+
+
 export class MovementHistory {
     
     public initialIndex: number;
     public deestinationIndex: number;
 
 }
+
+
+
+
+
+
+
+
+
 
 export class ListDescription {
 
@@ -148,6 +283,15 @@ export class ListDescription {
     }
 }
 
+
+
+
+
+
+
+
+
+
 export enum HistoryTypes {
     
     Suicide = 0,
@@ -158,6 +302,15 @@ export enum HistoryTypes {
     EndRaid = 5,
     
 }
+
+
+
+
+
+
+
+
+
 
 export class SuicideKingsListHistory {
 
@@ -682,6 +835,15 @@ export class SuicideKingsListHistory {
 
 }
 
+
+
+
+
+
+
+
+
+
 export class RaidMember extends SuicideKingsCharacter {
     public skListIndex: number;
 
@@ -708,6 +870,15 @@ export class RaidMember extends SuicideKingsCharacter {
     }
 }
 
+
+
+
+
+
+
+
+
+
 export class RaidList {
 
     public masterListId: string;
@@ -717,12 +888,30 @@ export class RaidList {
 
 }
 
+
+
+
+
+
+
+
+
+
 export class SuicideGroupMember extends RaidMember {
     
     public articles: string[] = [];
     public excludeFromAttendance: boolean = false;
 
 }
+
+
+
+
+
+
+
+
+
 
 export class SuicideGroup {
     
@@ -731,6 +920,15 @@ export class SuicideGroup {
     public members: SuicideGroupMember[] = [];
 
 }
+
+
+
+
+
+
+
+
+
 
 export class Raid {
 
@@ -744,11 +942,29 @@ export class Raid {
 
 }
 
+
+
+
+
+
+
+
+
+
 export class ListsDatabase {
     
     public masterLists: MasterSuicideKingsList[] = [];
 
 }
+
+
+
+
+
+
+
+
+
 
 export class RaidAttendee {
 
@@ -761,6 +977,15 @@ export class RaidAttendee {
 
 }
 
+
+
+
+
+
+
+
+
+
 export const raidKeyMap = {
     group: 0,
     name: 1,
@@ -768,6 +993,15 @@ export const raidKeyMap = {
     class: 3,
     raidRank: 4
 };
+
+
+
+
+
+
+
+
+
 
 export const guildMemberKeyMap = {
     name: 0,
