@@ -22,6 +22,7 @@
                 <div class="tab-content">
                     <div style="margin: 10px;">
                         <button mat-button (click)="closeModal()" *ngIf="raid != null"><mat-icon>event_busy</mat-icon> End Raid</button>
+                        <button mat-button (click)="addSplits()"><mat-icon>content_copy</mat-icon> Add Splits</button>
                         <button mat-button (click)="showAddNewCharacter()" *ngIf="raid != null"><mat-icon>person</mat-icon> New Character</button>
                         <button mat-button (click)="startTakingBids()" *ngIf="raid != null && !takingBids"><mat-icon>group</mat-icon> Start Taking Bids</button>
                         <button mat-button (click)="stopTakingBids()" *ngIf="raid != null && takingBids"><mat-icon>group_remove</mat-icon> Stop Taking Bids</button>
@@ -227,4 +228,4 @@
         <button mat-button color="warn" (click)="closeModal()">Cancel</button>
     </footer>
 </div>
-<input type="file" #fileSelector style="display:none;" accept="*.txt" (change)="fileSelected($event)" />
+<input type="file" #fileSelector style="display:none;" accept="*.txt" (change)="fileSelected($event)" multiple />
