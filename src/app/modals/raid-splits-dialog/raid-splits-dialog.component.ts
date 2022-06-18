@@ -1,18 +1,10 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
-import Fuse from 'fuse.js';
 import * as _ from 'lodash-es';
 import { IpcService } from '../../ipc.service';
-import { GuildMember, RaidAttendee, raidKeyMap, RaidSplit, SelectOption, SuicideKingsCharacter } from '../../core.model';
-import { DialogService } from '../../dialogs/dialog.service';
+import { RaidAttendee, raidKeyMap, RaidSplit } from '../../core.model';
 import { eqskid } from '../../core/eqsk-id';
 import { CsvUtilities } from 'src/app/utilities/csv.utilities';
-
-// import { Fuse } from 'fuse.js';
-// import * as fz from 'fuse.js';
 
 @Component( {
     selector: 'app-raid-splits-dialog',
@@ -21,33 +13,34 @@ import { CsvUtilities } from 'src/app/utilities/csv.utilities';
 } )
 export class RaidSplitsDialogComponent implements OnInit {
 
-    // public model: SuicideKingsCharacter = new SuicideKingsCharacter();
-    // public roster: GuildMember[] = [];
-    // public listOptions: SelectOption[] = [];
-    // public selectedListIds: string[]=[];
     private myName: string;
-    // @ViewChild( 'fileSelector' ) private fileSelector: ElementRef<HTMLInputElement>;
 
     constructor(
         public dialogRef: MatDialogRef<RaidSplitsDialogComponent>,
         @Inject( MAT_DIALOG_DATA ) public data: RaidSplit[],
         public dialog: MatDialog,
         private ipcService: IpcService,
-        // private dialogService: DialogService,
     ) { }
 
     ngOnInit() {
         this.ipcService.getValue<string>( 'youCharacterName' ).subscribe( name => this.myName = name );
-        // this.ipcService.
-        // this.model.name = this.data.name ? this.data.name : null;
-        // this.listOptions = _.map( this.data.listsDatabase.masterLists, f => {
-        //     let opt = new SelectOption();
-        //     opt.id = f.listId;
-        //     opt.label = f.name;
-        //     return opt;
-        // } );
     }
 
+
+
+
+
+
+
+
+
+    
+    /**
+     * Modifies ownership of the given raid split.
+     * 
+     * @param mine True if the given split is the user's raid.
+     * @param split The split the user is modifying.
+     */
     public changeSplitOwner( mine: boolean, split: RaidSplit ) {
         this.data.forEach( f => f.raidLeader = f.raidLeader === this.myName ? undefined : f.raidLeader );
         if ( mine ) {
@@ -55,11 +48,38 @@ export class RaidSplitsDialogComponent implements OnInit {
         }
     }
 
+
+
+
+
+
+
+
+
+    
+    /**
+     * Changes the split standby property, only allowing 1 standby per raid.
+     * 
+     * @param checked True, if the user is making the split the standby.
+     * @param split The split the user is changing.
+     */
     public changeStandby( checked: boolean, split: RaidSplit ) {
         this.data.forEach( f => f.standby = false );
         split.standby = checked;
     }
 
+
+
+
+
+
+
+
+
+    
+    /**
+     * Adds a new split to the list.
+     */
     public addSplit(): void {
         let split = new RaidSplit();
         split.id = eqskid();
@@ -67,10 +87,31 @@ export class RaidSplitsDialogComponent implements OnInit {
         this.data.push( split );
     }
 
+
+
+
+
+
+
+
+
+    
+    /**
+     * Closes the dialog and passes the updated split data to caller.
+     */
     public saveSplits(): void {
         this.dialogRef.close( this.data );
     }
 
+
+
+
+
+
+
+
+
+    
     /**
      * Parses the given raid dump file and creates a new raid.
      * 
@@ -86,6 +127,15 @@ export class RaidSplitsDialogComponent implements OnInit {
 
         fileReader.readAsText( fileSelector.files[ 0 ] );
     }
+
+
+
+
+
+
+
+
+
 
     /**
      * Parses the given raid dump into raid attendees.
