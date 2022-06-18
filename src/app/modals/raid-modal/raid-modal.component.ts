@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Character, GuildMember, ListsDatabase, MasterSuicideKingsList, Raid, RaidList, RaidAttendee, raidKeyMap, RaidMember, Suicide, SuicideKingsCharacter, MovementHistory, SuicideKingsListHistory, ListDescription, HistoryTypes, SuicideGroup, SuicideGroupMember } from 'src/app/core.model';
+import { Character, GuildMember, ListsDatabase, MasterSuicideKingsList, Raid, RaidList, RaidAttendee, raidKeyMap, RaidMember, Suicide, SuicideKingsCharacter, MovementHistory, SuicideKingsListHistory, ListDescription, HistoryTypes, SuicideGroup, SuicideGroupMember, CharacterClasses, RaidSplit } from 'src/app/core.model';
 import { DialogService } from 'src/app/dialogs/dialog.service';
 import { IpcService } from 'src/app/ipc.service';
 const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -17,6 +17,7 @@ import { ICharacterMultiList } from '../modals.model';
 import { MissingRaiderDialogComponent } from '../missing-raider-dialog/missing-raider-dialog.component';
 import { MasterListHistoryDialogComponent } from 'src/app/sk-lists/master-list-history-dialog/master-list-history-dialog.component';
 import { UniqueList } from 'src/app/core/unique-list';
+import { RaidSplitsDialogComponent } from '../raid-splits-dialog/raid-splits-dialog.component';
 
 const raidReactivationHours = 24 * 365 * 1;
 
@@ -54,6 +55,7 @@ export class RaidModalComponent implements OnInit {
     public suicideGroups: SuicideGroup[] = [];
     public singleListBidAccept: boolean = false;
     public autoSelectedRaiders: UniqueList<string> = new UniqueList<string>();
+    public characterClasses: typeof CharacterClasses = CharacterClasses;
 
     public get selectedMasterLists(): MasterSuicideKingsList[] {
         // Possible error could occur if the selected master lists change after the raid has begun.
@@ -513,7 +515,37 @@ export class RaidModalComponent implements OnInit {
      */
     fileSelected( e: Event ) {
         let input = e.target as HTMLInputElement;
+        // let files = input.files;
+
+        // for ( let i = 0; i < files.length; i++ ) {
+        //     let file = files[ i ];
+        // }
+        // input.value = null;
+
         this.parseRaidDump( input.files[ 0 ] );
+    }
+
+
+
+
+
+
+
+
+
+    
+    /**
+     * Shows the raid splits window.
+     */
+    addSplits() {
+        this.raid.splits = this.raid.splits?.length > 0 ? this.raid.splits : [];
+        this.dialog.open<RaidSplitsDialogComponent, RaidSplit[], RaidSplit[]>( RaidSplitsDialogComponent, {
+            width: '650px',
+            data: this.raid.splits,
+            panelClass: 'app-dialog',
+        } ).afterClosed().subscribe( splits => {
+            console.log( 'splits', splits );
+        } );
     }
     
 
