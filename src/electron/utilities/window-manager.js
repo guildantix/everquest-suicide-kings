@@ -51,8 +51,8 @@ class WindowManager {
                 parent: mainWindowRef.reference,
                 modal: true,
                 show: false,
-                width: 1000,
-                height: 800,
+                width: 1300,
+                height: 900,
                 frame: false,
                 webPreferences: {
                     nodeIntegration: true,
