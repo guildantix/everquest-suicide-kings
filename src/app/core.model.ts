@@ -857,6 +857,7 @@ export class RaidMember extends SuicideKingsCharacter {
         raidMember.level = attendee.level;
         raidMember.name = attendee.name;
         raidMember.skListIndex = listIndex;
+        raidMember.splitId = attendee.splitId;
 
         return raidMember;
     }
@@ -998,6 +999,7 @@ export class RaidAttendee {
     public class: string | null = null;
     public raidRank: string | null = null;
     public inList: boolean = false;
+    public splitId?: string;
 
 }
 

@@ -121,7 +121,7 @@ export class RaidSplitsDialogComponent implements OnInit {
         let fileReader = new FileReader();
         
         fileReader.onload = () => {
-            split.dumpRoster = this.parseRaidDumpData( fileReader.result as string );
+            split.dumpRoster = this.parseRaidDumpData( fileReader.result as string, split.id );
             fileSelector.value = null;
         };
 
@@ -143,8 +143,9 @@ export class RaidSplitsDialogComponent implements OnInit {
      * @returns Returns the list of raid attendees.
      * 
      * @param data The raw csv file.
+     * @param splitId The id of the raid split.
      */
-    parseRaidDumpData( data: string ): RaidAttendee[] {
+    parseRaidDumpData( data: string, splitId: string ): RaidAttendee[] {
         let csv = CsvUtilities.parseCsvData( data );
         let raidRoster: RaidAttendee[] = [];
     
@@ -160,6 +161,7 @@ export class RaidSplitsDialogComponent implements OnInit {
                 attendee.class = raider[ raidKeyMap.class ];
                 attendee.raidRank = raider[ raidKeyMap.raidRank ];
                 // attendee.inList = raider[ raidKeyMap.inList ];
+                attendee.splitId = splitId;
     
                 raidRoster.push( attendee );
             }
