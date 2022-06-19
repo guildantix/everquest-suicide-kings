@@ -67,8 +67,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/guildantix/everquest-suicide-kings.git",
-    "token": "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"
+    "url": "https://github.com/guildantix/everquest-suicide-kings.git"
   },
   "build": {
     "productName": "EQ Suicide Kings",
@@ -80,8 +79,7 @@
       ],
       "publish": [
         {
-          "provider": "github",
-          "token": "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"
+          "provider": "github"
         }
       ]
     },
