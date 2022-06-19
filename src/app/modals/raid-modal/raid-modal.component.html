@@ -23,6 +23,7 @@
 
                     <div style="margin: 10px;">
                         <button mat-button (click)="closeModal()" *ngIf="raid != null"><mat-icon>event_busy</mat-icon> End Raid</button>
+                        <button mat-button (click)="quickAddStandby()" *ngIf="raid != null"><mat-icon>person_outline</mat-icon> Add Standby</button>
                         <button mat-button (click)="addSplits()" *ngIf="raid != null"><mat-icon>content_copy</mat-icon> Add Splits</button>
                         <button mat-button (click)="viewSplits()" *ngIf="raid?.splits?.length > 0"><mat-icon>list</mat-icon> View Splits</button>
                         <button mat-button (click)="showAddNewCharacter()" *ngIf="raid != null"><mat-icon>person</mat-icon> New Character</button>

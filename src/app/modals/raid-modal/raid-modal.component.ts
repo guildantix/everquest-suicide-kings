@@ -168,6 +168,8 @@ export class RaidModalComponent implements OnInit {
         this.ipcService.getGuildRoster().subscribe( roster => {
             this.guildRoster = roster;
         } );
+
+        this.ipcService.onStandbyRaider().subscribe( name => this.addStandby( name ) );
         
     }
 
@@ -603,7 +605,7 @@ export class RaidModalComponent implements OnInit {
         } );
 
         this.dialog.open<ViewSplitsDialogComponent, { splits: RaidSplit[], raiders: RaidMember[] }>( ViewSplitsDialogComponent, {
-            width: '750px',
+            // width: '750px',
             data: { splits: this.raid.splits, raiders: raiders },
             panelClass: 'app-dialog',
         } ).afterClosed().subscribe();
@@ -751,6 +753,33 @@ export class RaidModalComponent implements OnInit {
                 }
             } );
         });
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Selects the character in all master lists that are selected for this 
+     * raid event.
+     * 
+     * @param name The name of the character to select.
+     */
+    private selectCharacterInMasters( name: string ) {
+        this.listsDatabase.masterLists.forEach( master => {
+            if ( master.selected ) {
+                master.list.forEach( ( character: SuicideKingsCharacter, listIndex: number ) => {
+                    if ( character.name === name ) {
+                        character.selected = true;
+                    }
+                } );
+            }
+        } );
     }
 
 
@@ -1045,6 +1074,8 @@ export class RaidModalComponent implements OnInit {
             }
         } );
 
+        // MARKER
+
         if ( notInMasterList.length > 0 ) {
             this.dialog.open<MissingRaiderDialogComponent, MissingRaidersModel, MissingRaidersModel>( MissingRaiderDialogComponent, {
                 width: '650px',
@@ -1098,6 +1129,31 @@ export class RaidModalComponent implements OnInit {
                 let attendee = raidDump.find( f => f.name === raider.name && f.splitId !== standbyId );
                 if ( attendee ) {
                     raider.splitId = attendee.splitId;
+                }
+            } );
+        } );
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Updates the specified raider with the given split id.
+     * 
+     * @param name The name of the raider.
+     * @param splitId The id of their split.
+     */
+    private updateRaiderSplitId( name: string, splitId: string ) {
+        this.raid.lists.forEach( raidList => {
+            raidList.list.forEach( raider => {
+                if ( raider.name === name ) {
+                    raider.splitId = splitId;
                 }
             } );
         } );
@@ -1664,4 +1720,167 @@ export class RaidModalComponent implements OnInit {
         });
     }
 
+
+
+
+
+
+
+
+
+
+    /**
+     * Creates a new raid split.
+     * 
+     * @returns Returns the split id.
+     * 
+     * @param standby True, if the new split is the standby split.
+     */
+    public addSplit( standby?: boolean ): string {
+        this.raid.splits = this.raid.splits?.length > 0 ? this.raid.splits : [];
+        
+        let split = new RaidSplit();
+        split.id = eqskid();
+        split.name = standby ? 'Standby' : `${this.raid.splits.length + 1}`;
+
+        if ( standby ) {
+            this.raid.splits.forEach( ( f, i ) => {
+                f.name = f.standby ? `${i + 1}` : f.name;
+                f.standby = false;
+            } );
+            split.standby = true;
+        }
+        
+        this.raid.splits.push( split );
+
+        return split.id;
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Allows the user to quickly add a standby raider by name.
+     */
+    public quickAddStandby() {
+        this.dialogService.showInputDialog(
+            'Standby',
+            [ 'Enter the name of the character to add to standby' ],
+            'Character',
+            'Enter the character name',
+            null
+        ).subscribe( output => {
+            if ( output.value ) {
+                this.addStandby( output.value );
+            }
+        } );
+    }
+
+
+
+
+
+
+
+
+
+    
+    /**
+     * Adds the given raider name to the standby split.
+     * 
+     * @param name The name of the raider in standby.
+     */
+    public addStandby( name: string ) {
+        
+        let standbyId: string = null;
+        
+        if ( this.raid.splits == null || this.raid.splits.length === 0 ) {
+            let primarySplitId = this.addSplit();
+            
+            this.raid.lists.forEach( raidList => {
+                raidList.list.forEach( raider => {
+                    raider.splitId = primarySplitId;
+                } );
+            } );
+
+            standbyId = this.addSplit( true );
+
+        } else {
+            standbyId = this.raid.splits?.find( f => f.standby )?.id ?? this.addSplit( true );
+
+        }
+
+        this.ipcService.getGuildRoster().subscribe( roster => {
+            let i = roster.findIndex( f => f.name === name );
+
+            if ( i < 0 ) {
+                this.dialog.open<NewRaiderDialogComponent, NewRaiderModel, NewRaiderResultModel>( NewRaiderDialogComponent, {
+                    width: '650px',
+                    data: { listsDatabase: this.listsDatabase, name: name, standby: true },
+                    panelClass: 'app-dialog',
+                } ).afterClosed().subscribe( newRaider => {
+        
+                    if ( newRaider ) {
+        
+                        this.assignAttendeeToLists( roster, newRaider );
+        
+                        this.updateRaiderSplitId( name, standbyId );
+                        this.save();
+        
+                        this.dismissUnknownRaider( name );
+                    }
+        
+                } );
+            } else {
+
+                // determine if the member needs to be added to a list (ask the user to confirm/select)
+                let notInMasterList = !_.some( this.listsDatabase.masterLists, m => m.selected && _.some( m.list, c => c.name === name ) );
+                
+                if ( notInMasterList ) {
+                    let attendee = new RaidAttendee();
+
+                    attendee.group = 0;
+                    attendee.name = name;
+                    attendee.level = roster[ i ].level;
+                    attendee.class = roster[ i ].class;
+                    attendee.raidRank = '';
+                    // attendee.inList = false;
+                    attendee.splitId = standbyId;
+
+                    this.dialog.open<MissingRaiderDialogComponent, MissingRaidersModel, MissingRaidersModel>( MissingRaiderDialogComponent, {
+                        width: '650px',
+                        data: { listsDatabase: this.listsDatabase, raiders: [ attendee ] as MissingRaiderModel[] },
+                        panelClass: 'app-dialog',
+                    } ).afterClosed().subscribe( raiderListAssignments => {
+                        if ( raiderListAssignments !== null ) {
+        
+                            raiderListAssignments.raiders.forEach( newRaider => {
+                                this.assignAttendeeToLists( roster, newRaider );
+                            } );
+                
+                            this.ipcService.storeGuildRoster( roster );
+                                
+                        }
+                        
+                        this.updateRaiderSplitId( name, standbyId );
+                        this.save();
+
+                    } );
+
+                } else {
+                    this.selectCharacterInMasters( name );
+                    this.addSelectedToRaid();
+                    this.updateRaiderSplitId( name, standbyId );
+                    this.save();
+                }
+
+            }
+        } );
+    }
 }
