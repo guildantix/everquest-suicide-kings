@@ -2,7 +2,8 @@
 
 <mat-dialog-content>
 
-    <p>Enter the name of the new raider</p>
+    <p *ngIf="data.standby">A new standby raider is attending.</p>
+    <p>Enter the name of the new raider.</p>
 
     <div class="container">
         <mat-form-field>
