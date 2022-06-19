@@ -19,12 +19,9 @@ export class ViewSplitsDialogComponent implements OnInit {
         private ipcService: IpcService,
     ) { }
 
-    ngOnInit() {
-        console.log( 'data in', this.data );
-    }
+    ngOnInit() { }
 
     public getSplitMembers( splitId: string ): RaidMember[] {
-        console.log( 'split id', splitId );
         return this.data.raiders.filter( f => f.splitId === splitId );
     }
     
