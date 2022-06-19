@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Raid Splits</h2>
+
+<mat-dialog-content>
+
+    <div class="container">
+        <div *ngFor="let split of data.splits">
+            <h3>{{split.name}}</h3>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Class</th>
+                </tr>
+                <tr *ngFor="let member of getSplitMembers(split.id)">
+                    <td>{{member.skListIndex + 1}}</td>
+                    <td>{{member.name}}</td>
+                    <td>{{member.class}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    
+    <button mat-button [mat-dialog-close]="null" class="t-confirm-no">Close</button>
+
+</mat-dialog-actions>

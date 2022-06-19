@@ -1,0 +1,10 @@
+table {
+    width: auto;
+    td:last-of-type {
+        padding-right: 15px;
+    }
+}
+div.container {
+    display: flex;
+    justify-content: space-around;
+}
