@@ -2,9 +2,6 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Character, GuildMember, ListsDatabase, MasterSuicideKingsList, Raid, RaidList, RaidAttendee, raidKeyMap, RaidMember, Suicide, SuicideKingsCharacter, MovementHistory, SuicideKingsListHistory, ListDescription, HistoryTypes, SuicideGroup, SuicideGroupMember, CharacterClasses, RaidSplit } from 'src/app/core.model';
 import { DialogService } from 'src/app/dialogs/dialog.service';
 import { IpcService } from 'src/app/ipc.service';
-const alphabet = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-import { customAlphabet } from 'nanoid';
-const nanoid = customAlphabet( alphabet, 16 );
 import * as _ from 'lodash-es';
 import { CsvUtilities } from 'src/app/utilities/csv.utilities';
 import { DateUtilities } from 'src/app/utilities/date.utilities';
@@ -18,6 +15,8 @@ import { MissingRaiderDialogComponent } from '../missing-raider-dialog/missing-r
 import { MasterListHistoryDialogComponent } from 'src/app/sk-lists/master-list-history-dialog/master-list-history-dialog.component';
 import { UniqueList } from 'src/app/core/unique-list';
 import { RaidSplitsDialogComponent } from '../raid-splits-dialog/raid-splits-dialog.component';
+import { eqskid } from 'src/app/core/eqsk-id';
+import { ViewSplitsDialogComponent } from '../view-splits-dialog/view-splits-dialog.component';
 
 const raidReactivationHours = 24 * 365 * 1;
 
@@ -418,6 +417,7 @@ export class RaidModalComponent implements OnInit {
         } );
 
         this.addSelectedToRaid();
+        this.save();
     }
 
 
@@ -506,6 +506,26 @@ export class RaidModalComponent implements OnInit {
 
 
 
+
+    /**
+     * Shows the split window or the dump file selector.
+     */
+    public selectDumpFile() {
+        if ( this.raid.splits?.length > 0 ) {
+            this.addSplits();
+        } else {
+            this.fileSelector.nativeElement.click();
+        }
+    }
+
+
+
+
+
+
+
+
+
     
     /**
      * Handles the file inputs change event and parses the selected raid dump 
@@ -544,8 +564,50 @@ export class RaidModalComponent implements OnInit {
             data: this.raid.splits,
             panelClass: 'app-dialog',
         } ).afterClosed().subscribe( splits => {
-            console.log( 'splits', splits );
+            if ( splits ) {
+                let attendees: RaidAttendee[] = [];
+            
+                // Combine each split list into a single raid attendee list.
+                splits.forEach( split => {
+                    if ( split.dumpRoster?.length ) {
+                        attendees = Array.prototype.concat( attendees, split.dumpRoster );
+                    }
+                
+                    split.dumpRoster = null
+                } );
+            
+                this.raid.splits = splits;
+                this.processRaidAttendees( attendees );
+            }
         } );
+    }
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Opens a modal to allow the user to view the splits distribution.
+     */
+    viewSplits() {
+        let raiders: RaidMember[] = [];
+        this.raid.lists.forEach( raidList => {
+            if ( raidList.list?.length > 0 ) {
+                raiders = Array.prototype.concat( raiders, raidList.list );
+            }
+        } );
+
+        this.dialog.open<ViewSplitsDialogComponent, { splits: RaidSplit[], raiders: RaidMember[] }>( ViewSplitsDialogComponent, {
+            width: '750px',
+            data: { splits: this.raid.splits, raiders: raiders },
+            panelClass: 'app-dialog',
+        } ).afterClosed().subscribe();
+
     }
     
 
@@ -765,7 +827,6 @@ export class RaidModalComponent implements OnInit {
      * @param fromDump If the selected raiders were added automaticaly by parsing a raid dump file.
      */
     addSelectedToRaid( fromDump?: boolean ) {
-        
         fromDump = fromDump ? true : false;
 
         let raidStarting = true;
@@ -812,8 +873,6 @@ export class RaidModalComponent implements OnInit {
         
         // Reorder the raid list and save the changes.
         this.raid.lists.forEach( raidList => raidList.list = _.sortBy( raidList.list, f => f.skListIndex ) );
-
-        this.save();
     }
 
 
@@ -930,12 +989,41 @@ export class RaidModalComponent implements OnInit {
     
         } );
 
+        this.processRaidAttendees( raidRoster );
+    }
 
+
+
+
+
+
+
+
+
+
+    /**
+     * Adds the attendees from the dump list or marks for removal attending 
+     * from the event if not in the dump list.
+     * 
+     * @param raidDump The dump attendees.
+     */
+    private processRaidAttendees( raidDump: RaidAttendee[] ) {
+
+        // Move attending from standby to 
+        
+        // Check for duplicate attendees.
+        let standbyId = this.raid.splits?.find( f => f.standby )?.id ?? null;
+
+        // Pre-first, syncronize raid split ids.  If an attendee has moved from one split to another, we need to update their split id in the raid list.
+        this.updateRaiderSplitIds( raidDump, standbyId );
+        
         // First, remove raid attendees that are not in the dump file.
         let hasMissingFromDump = false;
         this.raid.lists.forEach( raidList => {
             raidList.list.forEach( raider => {
-                if ( !_.some( raidRoster, rost => rost.name === raider.name ) ) {
+                let attendee = _.find( raidDump, rost => rost.name === raider.name );
+                let inStandby = standbyId != null && raider.splitId === standbyId;
+                if ( !attendee && !inStandby ) {
                     raider.selected = true;
                     hasMissingFromDump = true;
                     this.autoSelectedRaiders.add( raider.name );
@@ -944,12 +1032,13 @@ export class RaidModalComponent implements OnInit {
         } );
             
         // Next, add existing members that are not in the raid, to the raid.
-        raidRoster.forEach( raider => this.selectRaidAttendee( raider ) );
+        raidDump.forEach( raider => this.selectRaidAttendee( raider ) );
         this.addSelectedToRaid( true );
+        this.save();
 
         // determine if new members need to be added to the list (ask the user to confirm/select)
         let notInMasterList: RaidAttendee[] = [];
-        raidRoster.forEach( attendee => {
+        raidDump.forEach( attendee => {
             let isMissing = !_.some( this.listsDatabase.masterLists, m => m.selected && _.some( m.list, c => c.name === attendee.name ) );
             if ( isMissing ) {
                 notInMasterList.push( attendee );
@@ -969,6 +1058,7 @@ export class RaidModalComponent implements OnInit {
                             this.assignAttendeeToLists( roster, newRaider );
                         } );
         
+                        this.ipcService.storeGuildRoster( roster );
                     } );
                         
                     this.save();
@@ -976,12 +1066,41 @@ export class RaidModalComponent implements OnInit {
                 if ( hasMissingFromDump ) {
                     this.dialogService.showInfoDialog( 'Missing Members', [ 'There are some members that are in the raid but were not found in the output file.', 'The characters that were missing from the output file have been automatically selected for removal.', 'To remove these characters from the raid, please click on the "Remove Selected from Raid" button.' ], 'raid-modal:missing-members-warning' );
                 }
+                this.updateRaiderSplitIds( raidDump, standbyId );
             } );
                 
         } else if ( hasMissingFromDump ) {
             this.dialogService.showInfoDialog( 'Missing Members', [ 'There are some members that are in the raid but were not found in the output file.', 'The characters that were missing from the output file have been automatically selected for removal.', 'To remove these characters from the raid, please click on the "Remove Selected from Raid" button.' ], 'raid-modal:missing-members-warning' );
+            this.updateRaiderSplitIds( raidDump, standbyId );
+        } else {
+            this.updateRaiderSplitIds( raidDump, standbyId );
         }
+    }
 
+
+
+
+
+
+
+
+
+
+    /**
+     * Updates the split id of each member in the raid event.
+     * 
+     * @param raidDump The attendees in the raid dump(s).
+     * @param standbyId The id of the standby raid, if any.
+     */
+    private updateRaiderSplitIds( raidDump: RaidAttendee[], standbyId: string ) {
+        this.raid.lists.forEach( raidList => {
+            raidList.list.forEach( raider => {
+                let attendee = raidDump.find( f => f.name === raider.name && f.splitId !== standbyId );
+                if ( attendee ) {
+                    raider.splitId = attendee.splitId;
+                }
+            } );
+        } );
     }
 
 
@@ -1017,7 +1136,7 @@ export class RaidModalComponent implements OnInit {
     createRaid() {
         let raid = new Raid();
 
-        raid.raidId = nanoid();
+        raid.raidId = eqskid();
         raid.name = null;
         raid.completed = false;
         raid.date = ( new Date() ).toISOString();
@@ -1034,7 +1153,7 @@ export class RaidModalComponent implements OnInit {
 
             }
         } );
-        
+
         this.raid = raid;
         this.raidDb.push( raid );
 
@@ -1417,12 +1536,13 @@ export class RaidModalComponent implements OnInit {
             let charMasterIndex = this.listsDatabase.masterLists[ masterIndex ].list.findIndex( f => f.name === attendee.name );
 
             if ( charMasterIndex === -1 ) {
-                this.listsDatabase.masterLists[ masterIndex ].list.push( Object.assign( new SuicideKingsCharacter(), attendee ) );
+                let listObj = Object.assign( new SuicideKingsCharacter(), attendee );
+                listObj.selected = true;
+                this.listsDatabase.masterLists[ masterIndex ].list.push( listObj );
             }
-            
+
         } );
 
-        this.selectNewCharacter( attendee );
         this.addSelectedToRaid();
 
         if ( rosterIndex === -1 ) {
@@ -1435,7 +1555,6 @@ export class RaidModalComponent implements OnInit {
 
             roster.push( guildy );
             roster = _.orderBy( roster, f => f.name, 'asc' );
-            this.ipcService.storeGuildRoster( roster );
         }
 
     }
