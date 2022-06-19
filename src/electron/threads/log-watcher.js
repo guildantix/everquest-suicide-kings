@@ -21,6 +21,8 @@ var characterName = null;
 var bidStarted = null;
 /** @type {RegExp} */
 var bidder = null;
+/** @type {RegExp} */
+var skadd = null;
 var charLeftRaid = /^(?<character>.*) has left the raid\.$/gi;
 var charJoinedRaid = /^(?<character>\w+) joined the raid\.$/gi;
 // var bidStarted = /^(?:You|Embrey|Roseflower) (?:tells the|tell your) (?:raid|guild), '[X|x]:\s+(.*)'$/gi;
@@ -59,6 +61,7 @@ function LogWatcher( logFile, charName, suicideBidSymbol, suicideBidTakers ) {
     characterName = charName;
     bidStarted = new RegExp( `^(?:${suicideBidTakers.join( '|' )}) (?:tells the|tell your|say to your) (?:raid|guild), '[${suicideBidSymbol.toLowerCase()}]:\\s+(?<article>.*)'$`, 'gi' );
     bidder = new RegExp( `^(?<character>.*) (?:tells the|tell your|say to your) (?:raid|guild), '[${suicideBidSymbol.toLowerCase()}]+\\s*'$`, 'gi' );
+    skadd = new RegExp( `^(?<character>.*) (?:tells the|tell your|say to your) (?:raid|guild), '!skadd`, 'gi' );
     
     watchLogFile( logFile );
 
@@ -272,6 +275,14 @@ function parseLogEntries( raw, simulating ) {
     if ( bidStartedMatch?.groups?.article ) {
         ipcRenderer.send( 'log:event:bidStarted', bidStartedMatch?.groups?.article );
         matchFound = true;
+    }
+
+    let skaddMatch = skadd.exec( log );
+    if ( skaddMatch?.groups?.character ) {
+        let character = skaddMatch.groups.character === 'You' ? characterName : skaddMatch.groups.character;
+        if ( character ) {
+            this.ipcRenderer.send( 'standby_raider', character );
+        }
     }
 
 
