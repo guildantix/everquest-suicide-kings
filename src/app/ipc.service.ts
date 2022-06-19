@@ -21,11 +21,20 @@ export class IpcService {
     private _bidStartedObservers: Observer<string>[] = [];
     private _raidDumpObservers: Observer<string>[] = [];
     private _updateAvailableObservers: Observer<UpdateInfo>[] = [];
+    private _standByObservers: Observer<string>[] = [];
 
     constructor( private ngZone: NgZone ) {
         if ( ( <any>window ).require ) {
             try {
                 this.ipc = ( <any>window ).require( 'electron' ).ipcRenderer;
+
+                this.ipc.on( 'standby_raider', ( event: any, data: string ) => {
+                    ngZone.run( () => {
+                        this._standByObservers?.forEach( f => {
+                            f.next( data );
+                        } );
+                    } );
+                } );
 
                 this.ipc.on( 'update_downloaded', ( event: any, data: UpdateInfo ) => {
                     ngZone.run( () => {
@@ -97,6 +106,14 @@ export class IpcService {
         } else {
             console.warn( 'App not running inside Electron!' );
         }
+    }
+
+    public onStandbyRaider(): Observable<string> {
+        let obs: Observable<string> = new Observable<string>( ( observer: Observer<string> ) => {
+            this._standByObservers.push( observer );
+        } );
+
+        return obs;
     }
 
     public updateAvailable(): Observable<UpdateInfo> {
