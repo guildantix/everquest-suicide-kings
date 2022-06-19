@@ -15,14 +15,16 @@
                     <span>Raid SK Lists</span>
                     <span class="spacer"></span>
                     <button mat-button color="warn" [disabled]="!hasSelectedInRaid" (click)="removeSelectedFromRaid()"><mat-icon>person_remove</mat-icon> Remove Selected from Raid</button>
-                    <button mat-button (click)="fileSelector.click()"><mat-icon>file_download</mat-icon> Select Raid Output File</button>
+                    <button mat-button (click)="selectDumpFile()"><mat-icon>file_download</mat-icon> Select Raid Output File</button>
                     <!-- <button mat-button (click)="sendTest()">Send Test</button> -->
                 </mat-toolbar>
 
                 <div class="tab-content">
+
                     <div style="margin: 10px;">
                         <button mat-button (click)="closeModal()" *ngIf="raid != null"><mat-icon>event_busy</mat-icon> End Raid</button>
-                        <button mat-button (click)="addSplits()"><mat-icon>content_copy</mat-icon> Add Splits</button>
+                        <button mat-button (click)="addSplits()" *ngIf="raid != null"><mat-icon>content_copy</mat-icon> Add Splits</button>
+                        <button mat-button (click)="viewSplits()" *ngIf="raid?.splits?.length > 0"><mat-icon>list</mat-icon> View Splits</button>
                         <button mat-button (click)="showAddNewCharacter()" *ngIf="raid != null"><mat-icon>person</mat-icon> New Character</button>
                         <button mat-button (click)="startTakingBids()" *ngIf="raid != null && !takingBids"><mat-icon>group</mat-icon> Start Taking Bids</button>
                         <button mat-button (click)="stopTakingBids()" *ngIf="raid != null && takingBids"><mat-icon>group_remove</mat-icon> Stop Taking Bids</button>
