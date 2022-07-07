@@ -34,7 +34,7 @@ export class SkListsComponent implements OnInit {
     public set masterList( value: MasterSuicideKingsList ) {
         this._masterList = value;
         this.masterHistoryPreview = [];
-        if ( value.history?.length > 0 ) {
+        if ( value?.history?.length > 0 ) {
             let recentHistory = _.orderBy( value.history, f => f.timestamp, 'desc' );
             let max = value.history.length > value.list.length ? value.list.length : value.history.length;
             for ( let i = 0; i < max; i++ ) {
