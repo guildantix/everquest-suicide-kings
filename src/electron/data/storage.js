@@ -98,7 +98,7 @@ class Database {
             // Clean up some beta roster data that found its way in.
             let roster = this.#data.guildRoster;
             let removal = [];
-            roster.forEach( member => {
+            roster?.forEach( member => {
                 if ( member.lastOnline === '' ) {
                     removal.push( member.name );
                 }

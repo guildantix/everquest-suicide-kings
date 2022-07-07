@@ -46,7 +46,7 @@ var processedRaidDumps = [];
  * @param {string} logFile The file to watch.
  * @param {string} charName The character name for You.
  * @param {string} suicideBidSymbol The match symbol for bidding on items.
- * @param {string} suicideBidTakers The the authorized characters for starting bids.
+ * @param {string[]} suicideBidTakers The the authorized characters for starting bids.
  */
 function LogWatcher( logFile, charName, suicideBidSymbol, suicideBidTakers ) {
     
@@ -55,6 +55,8 @@ function LogWatcher( logFile, charName, suicideBidSymbol, suicideBidTakers ) {
 
     // You|Embrey|Roseflower
     // X|x
+
+    suicideBidTakers = suicideBidTakers?.length > 0 ? suicideBidTakers : [];
 
     suicideBidTakers.unshift( 'You' );
 
@@ -73,25 +75,28 @@ function LogWatcher( logFile, charName, suicideBidSymbol, suicideBidTakers ) {
  * @param {string} logFile The current log file path.
  */
 function initWatchForNewRaidDumps( logFile ) {
-
+    console.log( 'init raid dump watcher' );
+    
     let logMatch = /^.+eqlog_(?:.*)_(?<server>.*)\.txt$/gi.exec( logFile );
-    let serverName = logMatch.groups.server;
-    let dumpMatcher = new RegExp( `^.*RaidRoster_${serverName}-(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})-(?<hour>[0-9]{2})(?<min>[0-9]{2})(?<sec>[0-9]{2})\\.txt$`, 'gi' );
-    let fileMatch = /\\Logs\\eqlog_.*?_.*?.txt/gi.exec( logFile );
-    let eqPath = logFile.substring( 0, fileMatch.index );
-
-    // RaidRoster_firiona-20210504-202343.txt
-    let files = fs.readdirSync( eqPath );
-
-    files?.forEach( file => {
-        let match = dumpMatcher.exec( file );
-        if ( match?.groups ) {
-            processedRaidDumps.push( file );
-        }
-        dumpMatcher.lastIndex = 0;
-    } );
-
-    setTimeout( () => { watchForNewRaidDumps( eqPath, dumpMatcher ); }, dumpFileCheckTimer );
+    if ( logMatch ) {
+        let serverName = logMatch.groups.server;
+        let dumpMatcher = new RegExp( `^.*RaidRoster_${serverName}-(?<year>[0-9]{4})(?<month>[0-9]{2})(?<day>[0-9]{2})-(?<hour>[0-9]{2})(?<min>[0-9]{2})(?<sec>[0-9]{2})\\.txt$`, 'gi' );
+        let fileMatch = /\\Logs\\eqlog_.*?_.*?.txt/gi.exec( logFile );
+        let eqPath = logFile.substring( 0, fileMatch.index );
+    
+        // RaidRoster_firiona-20210504-202343.txt
+        let files = fs.readdirSync( eqPath );
+    
+        files?.forEach( file => {
+            let match = dumpMatcher.exec( file );
+            if ( match?.groups ) {
+                processedRaidDumps.push( file );
+            }
+            dumpMatcher.lastIndex = 0;
+        } );
+    
+        setTimeout( () => { watchForNewRaidDumps( eqPath, dumpMatcher ); }, dumpFileCheckTimer );
+    }
 }
 
 /**
