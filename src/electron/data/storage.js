@@ -28,6 +28,20 @@ class Database {
         this.#data = this.parseDataFile();
 
         this.upgradeDatabaseFile();
+        this.fixDatabase();
+    }
+
+    fixDatabase() {
+
+        if ( this.#data.masterListsDb && this.#data.masterListsDb.masterLists?.length > 0 ) {
+
+            this.#data.masterListsDb.masterLists.forEach( master => {
+                _.remove( master.list, f => f === null || f === undefined );
+            } );
+
+        }
+
+        this.storeDataFile();
     }
 
     upgradeDatabaseFile() {

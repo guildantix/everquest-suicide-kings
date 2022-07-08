@@ -464,7 +464,7 @@ export class SkListsComponent implements OnInit {
     addCharacter( character: SuicideKingsCharacter ) {
         let i = this.masterList.list.findIndex( f => f.name === character.name );
 
-        if ( i === -1 ) {
+        if ( i === -1 && character != null ) {
             this.masterList.list.push( character );
         }
     }
