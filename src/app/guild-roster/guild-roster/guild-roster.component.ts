@@ -478,4 +478,20 @@ export class GuildRosterComponent implements OnInit {
 
     }
 
+
+
+
+
+
+
+
+
+    
+    /**
+     * Opens the loot history modal.
+     */
+    openLootHistory() {
+        this.ipcService.showLootHistoryModal().subscribe();
+    }
+
 }
