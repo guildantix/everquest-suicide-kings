@@ -125,7 +125,7 @@
                                 <tr *ngFor="let name of namesJoinedRaid">
                                     <td>{{name}}</td>
                                     <td class="pointer" style="width: 110px;" (click)="showAddNewCharacter(name)"><a class="color-blue a-btn hover-only">Add Character</a></td>
-                                    <td class="pointer" style="width: 65px;" (click)="dismissUnknownRaider(name)"><a class="color-red a-btn hover-only">Dismiss</a></td>
+                                    <td class="pointer" style="width: 65px;" (click)="updateUnknownRaidersArray(name)"><a class="color-red a-btn hover-only">Dismiss</a></td>
                                 </tr>
                             </table>
                         </div>
