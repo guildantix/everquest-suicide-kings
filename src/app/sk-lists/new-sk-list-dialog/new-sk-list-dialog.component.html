@@ -31,8 +31,8 @@
             <td><span class="faded character-level">[{{member.level}}]</span>{{member.class}}</td>
             <td>{{member.alt ? '' : 'Y'}}</td>
             <td>
-                <input name="txtInitialSeed_{{i}}" [(ngModel)]="member.initialSeed" [enabled]="member.selected" class="inline-input" />
-                <a [disabled]="!member.selected" class="color-blue a-btn" (click)="randomizeSeed(i)">Random</a>
+                <input name="txtInitialSeed_{{i}}" [(ngModel)]="member.initialSeed" [attr.enabled]="member.selected" class="inline-input" />
+                <a [attr.disabled]="!member.selected" class="color-blue a-btn" (click)="randomizeSeed(i)">Random</a>
             </td>
         </tr>
     </table>

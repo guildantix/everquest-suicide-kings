@@ -13,7 +13,7 @@ import { CsvUtilities } from 'src/app/utilities/csv.utilities';
 } )
 export class RaidSplitsDialogComponent implements OnInit {
 
-    private myName: string;
+    public myName: string;
 
     constructor(
         public dialogRef: MatDialogRef<RaidSplitsDialogComponent>,

@@ -15,8 +15,8 @@
     <ng-template [ngIf]="masterList?.list?.length > 0">
 
         <div style="margin: 10px;">
-            <button mat-button (click)="beginNewRaid()" *ngIf="raid == null" title="Select characters from the list to start a raid, or choose Start Raid to select a raid dump file."><mat-icon>play_arrow</mat-icon> Start Raid</button>
-            <button mat-button (click)="completeRaid()" *ngIf="raid != null"><mat-icon>event_busy</mat-icon> End Raid</button>
+            <button mat-button (click)="beginNewRaid()" title="Select characters from the list to start a raid, or choose Start Raid to select a raid dump file."><mat-icon>play_arrow</mat-icon> Start Raid</button>
+            <!-- <button mat-button (click)="completeRaid()" *ngIf="raid != null"><mat-icon>event_busy</mat-icon> End Raid</button> -->
             <button mat-button (click)="showAddNewCharacter()"><mat-icon>person</mat-icon> New Character</button>
             <!-- <button mat-button *ngIf="!sortByAlpha" (click)="sortByAlpha = true"><mat-icon>sort_by_alpha</mat-icon> Sort Alphabetically</button>
             <button mat-button *ngIf="sortByAlpha" (click)="sortByAlpha = false"><mat-icon>sort</mat-icon> Sort Positionally</button> -->
