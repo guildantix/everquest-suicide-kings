@@ -52,11 +52,10 @@ export enum CharacterClasses {
     Paladin = 'PAL',
     Ranger = 'RNG',
     Rogue = 'ROG',
-    // Shadowknight = 'SHD',
+    'Shadow Knight' = 'SHD',
     Shaman = 'SHM',
     Warrior = 'WAR',
     Wizard = 'WIZ',
-    'Shadow Knight' = 'SHD',
 }
 
 

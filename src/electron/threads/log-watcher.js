@@ -75,7 +75,6 @@ function LogWatcher( logFile, charName, suicideBidSymbol, suicideBidTakers ) {
  * @param {string} logFile The current log file path.
  */
 function initWatchForNewRaidDumps( logFile ) {
-    console.log( 'init raid dump watcher' );
     
     let logMatch = /^.+eqlog_(?:.*)_(?<server>.*)\.txt$/gi.exec( logFile );
     if ( logMatch ) {
@@ -244,6 +243,7 @@ function parseLogEntries( raw, simulating ) {
     //     /You ([a-zA-Z0-9_]*) (.*) for ([0-9]*) points of (.*) damage by (.*)\./gi,
     // ];
 
+    // TODO: Remove timestamp.
     let timestamp = new Date( rgxTimestamp.exec( raw )[ 1 ] );
 
     if ( !timestamp || timestamp.length === 0 || timestamp.length === 1 )

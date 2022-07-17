@@ -537,13 +537,6 @@ export class RaidModalComponent implements OnInit {
      */
     fileSelected( e: Event ) {
         let input = e.target as HTMLInputElement;
-        // let files = input.files;
-
-        // for ( let i = 0; i < files.length; i++ ) {
-        //     let file = files[ i ];
-        // }
-        // input.value = null;
-
         this.parseRaidDump( input.files[ 0 ] );
     }
 
