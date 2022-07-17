@@ -1,0 +1,44 @@
+<div class="modal">
+    <header>
+        <mat-toolbar class="titlebar" color="default">
+            <span>Loot History</span>
+            <span class="spacer"></span>
+            <button mat-icon-button aria-label="Exit application" (click)="closeModal()">
+                <mat-icon>clear</mat-icon>
+            </button>
+        </mat-toolbar>
+    </header>
+    <section>
+        <mat-tab-group>
+            <mat-tab label="History">
+                <table>
+                    <!-- <tr>
+                        <th>Name</th>
+                        <th>Loot</th>
+                        <th>Count</th>
+                    </tr> -->
+                    <ng-template ngFor let-member [ngForOf]="memberLoots" let-i="index">
+                        <tr>
+                            <td class="breaker" *ngIf="i > 0" colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <th class="member-name">{{member.name}}</th>
+                            <th>Looted</th>
+                            <th>Count</th>
+                            <!-- <td>{{member.lootHistory[0]?.name}}</td>
+                            <td>{{member.lootHistory[0]?.count}}</td> -->
+                        </tr>
+                        <tr *ngFor="let loot of member.lootHistory; let i = index">
+                            <td></td>
+                            <td>{{loot.name}}</td>
+                            <td>{{loot.count}}</td>
+                        </tr>
+                    </ng-template>
+                </table>
+            </mat-tab>
+        </mat-tab-group>
+    </section>
+    <footer>
+        <button mat-button (click)="closeModal()">Close</button>
+    </footer>
+</div>

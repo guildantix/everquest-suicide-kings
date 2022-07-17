@@ -13,6 +13,7 @@ import { ContextMenuModule } from '../context-menu/context-menu.module';
 
 import { GuildRosterComponent } from './guild-roster/guild-roster.component';
 import { MemberSuicideHistoryDialogComponent } from './member-suidice-history-dialog/member-suidice-history-dialog.component';
+import { LootHistoryModalComponent } from './loot-report-modal/loot-history-modal.component';
 
 @NgModule({
     imports: [
@@ -31,7 +32,8 @@ import { MemberSuicideHistoryDialogComponent } from './member-suidice-history-di
     ],
     declarations: [
         GuildRosterComponent,
-        MemberSuicideHistoryDialogComponent
+        MemberSuicideHistoryDialogComponent,
+        LootHistoryModalComponent,
     ],
     providers: [],
 })
