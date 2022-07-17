@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { LootHistoryModalComponent } from './guild-roster/loot-report-modal/loot-history-modal.component';
 import { MainComponent } from './main.component';
 import { RaidModalComponent } from './modals/raid-modal/raid-modal.component';
 
@@ -68,6 +69,7 @@ import { RaidModalComponent } from './modals/raid-modal/raid-modal.component';
 let _routes: Routes = [
     { path: 'dashboard', component: MainComponent },
     { path: 'raid', component: RaidModalComponent },
+    { path: 'loot-history', component: LootHistoryModalComponent },
     // { path: '', redirectTo: '/users', pathMatch: 'full', canActivate: [ Guard ] }, // If the user is logged in, the Guard will allow the navigation and the user will be redirected to the user list.
     { path: '', redirectTo: '/dashboard', pathMatch: 'full' }, // If the user is not logged in, then the guard will not allow access (theoretically it should redirect the user, but) and this will redirect to the login page.
     // { path: '', component: SecureComponent, canActivate: [ Guard ], children: secureRoutes },

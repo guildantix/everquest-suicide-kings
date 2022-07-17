@@ -260,6 +260,22 @@ export class IpcService {
         return obs;
     }
 
+    public showLootHistoryModal(): Observable<string> {
+        let obs: Observable<string> = new Observable<string>( ( observer: Observer<string> ) => {
+            
+            this.ipc.once( 'loot-history:dialog:new', ( e, hwnd: string ) => {
+                this.ngZone.run( () => {
+                    observer.next( hwnd );
+                    observer.complete();
+                } );
+            } );
+            this.ipc.send( 'loot-history:dialog:new' );
+
+        } );
+
+        return obs;
+    }
+
     public updateLogFile( logFile: string ): void {
         this.ipc.send( 'log:select', logFile );
     }
