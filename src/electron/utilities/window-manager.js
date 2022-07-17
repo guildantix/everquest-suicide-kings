@@ -73,6 +73,35 @@ class WindowManager {
             windowDictionary[ hwnd ] = modalWindow;
 
         } );
+
+        ipcMain.on( 'loot-history:dialog:new', ( event, arg ) => {
+            
+            let modalWindow = new BrowserWindow( {
+                parent: mainWindowRef.reference,
+                modal: true,
+                show: false,
+                width: 900,
+                height: 900,
+                frame: false,
+                webPreferences: {
+                    nodeIntegration: true,
+                    devTools: app.isDev(),
+                }
+            } );
+
+            let url = `file://${this.#dirname}/dist/index.html#/loot-history`;
+
+            if ( arg ) {
+                url += `/${arg}`;
+            }
+            modalWindow.loadURL( url );
+            modalWindow.once( "ready-to-show", () => {
+                modalWindow.show();
+            } );
+            let hwnd = nanoid();
+            windowDictionary[ hwnd ] = modalWindow;
+
+        } );
         
         ipcMain.on( 'window:child:close', ( event, hwnd ) => {
             if ( hwnd !== null && hwnd !== undefined && hwnd.length > 0 ) {
