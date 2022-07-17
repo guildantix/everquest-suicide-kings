@@ -1,6 +1,8 @@
+import { ColoredString } from "../dialog.model";
+
 export class InputDialogModel {
     public title: string;
-    public message: string | string[];
+    public message: string | (string|ColoredString)[];
     public label: string;
     public hint: string;
     public defaultValue: string;
