@@ -12,11 +12,6 @@
         <mat-tab-group>
             <mat-tab label="History">
                 <table>
-                    <!-- <tr>
-                        <th>Name</th>
-                        <th>Loot</th>
-                        <th>Count</th>
-                    </tr> -->
                     <ng-template ngFor let-member [ngForOf]="memberLoots" let-i="index">
                         <tr>
                             <td class="breaker" *ngIf="i > 0" colspan="3"></td>
@@ -25,8 +20,6 @@
                             <th class="member-name">{{member.name}}</th>
                             <th>Looted</th>
                             <th>Count</th>
-                            <!-- <td>{{member.lootHistory[0]?.name}}</td>
-                            <td>{{member.lootHistory[0]?.count}}</td> -->
                         </tr>
                         <tr *ngFor="let loot of member.lootHistory; let i = index">
                             <td></td>
