@@ -17,6 +17,7 @@ import { UniqueList } from 'src/app/core/unique-list';
 import { RaidSplitsDialogComponent } from '../raid-splits-dialog/raid-splits-dialog.component';
 import { eqskid } from 'src/app/core/eqsk-id';
 import { ViewSplitsDialogComponent } from '../view-splits-dialog/view-splits-dialog.component';
+import { ColoredString } from 'src/app/dialogs/dialog.model';
 
 const raidReactivationHours = 24 * 365 * 1;
 
@@ -1258,13 +1259,21 @@ export class RaidModalComponent implements OnInit {
      * @param raider The desired raider.
      */
     askSuicideRaider( raider: RaidMember, masterListId: string ) {
+        
+        let loots = this.guildRoster.find( f => f.name === raider.name ).suicides;
+        let lootedCount: number = loots.filter( f => f.item != null && f.item === this.bidArticle )?.length;
+        
         this.dialogService.showInputDialog(
             `Suicide ${raider.name}`,
-            [ 'Enter the item description (or reason for suicide).', 'You can leave the field blank to suicide this character with no reason.', 'Clicking on cancel will stop the suicide' ],
+            [
+                lootedCount > 0 ? new ColoredString( `WARNING! ${raider.name} has previously looted ${this.bidArticle}! (x${lootedCount})`, '#f06969', true ) : this.bidArticle != null ? new ColoredString( `${raider.name} has not previously looted this item.`, '#69f0ae', false ) : null,
+                'Enter the item description (or reason for suicide).',
+                'You can leave the field blank to suicide this character with no reason.',
+                'Clicking on cancel will stop the suicide' ],
             'Item',
             'Enter an item description/name or leave blank to ignore.',
             this.bidArticle ?? null,
-            'Exclude raider from attendance?' )
+            'Exclude raider from attendance?', '550px' )
             .subscribe( answer => {
                 if ( answer || answer === undefined ) {
                     if ( !this.useSuicideGroups ) {
