@@ -7,6 +7,9 @@ This program was built to help run a suicide kings list in EverQuest.
 - You can have multiple suicide lists and run one or more at a time during a raid event.
 - The app will watch for new raid dumps, and automatically add new members to the raid when they join, or select members for removal when they no longer appear in the raid dump.
   - The EQ raid dump can exclude players if they're zoning when you perform a raid output file.
+- View loot history for members.
+- Track attendance.
+- Running split raids with suicide kings.
   
 ## Get Started
 
