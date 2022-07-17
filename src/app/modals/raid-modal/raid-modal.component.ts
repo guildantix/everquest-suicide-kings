@@ -1834,9 +1834,9 @@ export class RaidModalComponent implements OnInit {
         
                         this.updateRaiderSplitId( name, standbyId );
                         this.save();
-                    }
         
-                    this.updateUnknownRaidersArray( name );
+                        this.updateUnknownRaidersArray( name );
+                    }
         
                 } );
             } else {
