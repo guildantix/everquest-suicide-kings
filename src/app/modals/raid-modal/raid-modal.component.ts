@@ -269,7 +269,7 @@ export class RaidModalComponent implements OnInit {
      * 
      * @param name The name of the unknown raider.
      */
-    public dismissUnknownRaider( name: string ) {
+    public updateUnknownRaidersArray( name: string ) {
         let i = this.namesJoinedRaid.findIndex( f => f === name );
         if ( i > -1 ) {
             this.namesJoinedRaid.splice( i, 1 );
@@ -1642,11 +1642,11 @@ export class RaidModalComponent implements OnInit {
 
                 this.ipcService.getGuildRoster().subscribe( roster => {
                     this.assignAttendeeToLists( roster, newRaider );
+
+                    this.save();
                 } );
-
-                this.save();
-
-                this.dismissUnknownRaider( name );
+    
+                this.updateUnknownRaidersArray( name );
             }
 
         } );
@@ -1835,7 +1835,7 @@ export class RaidModalComponent implements OnInit {
                         this.updateRaiderSplitId( name, standbyId );
                         this.save();
         
-                        this.dismissUnknownRaider( name );
+                        this.updateUnknownRaidersArray( name );
                     }
         
                 } );
