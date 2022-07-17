@@ -1,6 +1,7 @@
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IpcService } from 'src/app/ipc.service';
+import { ColoredString } from '../dialog.model';
 import { InputDialogModel, InputDialogResponse } from './input-dialog.model';
 
 @Component( {
@@ -11,7 +12,7 @@ import { InputDialogModel, InputDialogResponse } from './input-dialog.model';
 export class InputDialogComponent implements OnInit {
 
     public model: InputDialogResponse = new InputDialogResponse();
-    public messages: string[] = [];
+    public messages: (string|ColoredString)[] = [];
 
     @HostListener( 'document:keydown.enter', [ '$event' ] ) onKeydownHandler( event: KeyboardEvent ) {
         this.dialogRef.close( this.model );
@@ -34,4 +35,8 @@ export class InputDialogComponent implements OnInit {
     }
 
     ngOnInit() { }
+
+    isColoredString( msg: any ): boolean {
+        return msg instanceof ColoredString;
+    }
 }

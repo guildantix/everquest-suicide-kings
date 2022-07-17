@@ -198,7 +198,7 @@ export class DialogService {
      * @param label Placeholder/label for the input.
      * @param hint Any additional information related to the request and how to fulfill it.
      */
-    public showInputDialog( title: string, message: string | string[], label?: string, hint?: string, defaultValue?: string, checkboxLabel: string = null ): Observable<InputDialogResponse> {
+    public showInputDialog( title: string, message: string | (string|ColoredString)[], label?: string, hint?: string, defaultValue?: string, checkboxLabel: string = null, width: string = null ): Observable<InputDialogResponse> {
         let data: InputDialogModel = new InputDialogModel();
         
         data.title = title;
@@ -210,7 +210,7 @@ export class DialogService {
         data.checkboxLabel = checkboxLabel;
         
         return this.dialog.open<InputDialogComponent, any, InputDialogResponse>( InputDialogComponent, {
-            width: '450px',
+            width: width ?? '450px',
             data: data,
             panelClass: 'app-dialog',
         } ).afterClosed();

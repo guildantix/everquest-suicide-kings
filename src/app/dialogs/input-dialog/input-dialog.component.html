@@ -2,7 +2,14 @@
 
 <mat-dialog-content>
 
-    <p *ngFor="let msg of messages">{{msg}}</p>
+    <p *ngFor="let msg of messages">
+        <ng-template [ngIf]="isColoredString(msg)" [ngIfElse]="isString">
+            <span [style.color]="msg.color" [style.font-weight]="msg.bold ? 'bold' : 'unset'">{{msg.value}}</span>
+        </ng-template>
+        <ng-template #isString>
+            {{msg}}
+        </ng-template>
+    </p>
 
     <ng-template [ngIf]="data.showCheckBox">
         <mat-checkbox [(ngModel)]="model.checked">{{data.checkboxLabel}}</mat-checkbox>
