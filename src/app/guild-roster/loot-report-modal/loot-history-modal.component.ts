@@ -20,7 +20,6 @@ interface IGuildMemberLoot {
 } )
 export class LootHistoryModalComponent implements OnInit {
 
-    // public roster: GuildMember[] = [];
     public memberLoots: IGuildMemberLoot[] = [];
     
     constructor(
@@ -49,6 +48,15 @@ export class LootHistoryModalComponent implements OnInit {
                 } ).filter( f => f.lootHistory?.length > 0 );
             } );
     }
+
+
+
+
+
+
+
+
+
 
     /**
      * Closes this window.
