@@ -28,7 +28,7 @@
             <td>{{member.name}}<mat-icon *ngIf="member.missingFromDump" style="float: right;" color="warn" title="Member is missing from last dump file.">report</mat-icon></td>
             <td>{{member.rank}}</td>
             <td>{{member.alt ? '' : 'Y'}}</td>
-            <ng-template [ngIf]="member.suicides == null" [ngIfElse]="suicideHistory"><td></td></ng-template>
+            <ng-template [ngIf]="member.suicides == null || member.suicides.length === 0" [ngIfElse]="suicideHistory"><td></td></ng-template>
             <ng-template #suicideHistory><td><a href="javascript:void(0)" class="color-blue" (click)="showMemberSuicideHistory(member.name)">{{member.suicides[member.suicides?.length-1].date | date:'shortDate'}}</a></td></ng-template>
             <td style="width: 128px;">
                 <div style="display: flex; flex-direction: row-reverse; margin-right: 25px; width: 128px;">

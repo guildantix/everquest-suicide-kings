@@ -38,7 +38,7 @@ class WindowManager {
     /**
      * Initializes all ipc event handlers for the window manager.
      * 
-     * @param {BrowserWindow} mainWindowRef The reference to the main window.
+     * @param {ForwardRef<BrowserWindow>} mainWindowRef The reference to the main window.
      * @param {() => void} sendTick A reference to the send tick function.
      */
     attachIpcEvents( mainWindowRef, sendTick ) {

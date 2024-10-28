@@ -466,6 +466,7 @@ export class SuicideKingsListHistory {
 
             if ( i > -1 ) {
                 let suicide = originalMember.suicides.splice( i, 1 )[ 0 ];
+                targetMember.suicides = targetMember.suicides ?? [];
                 targetMember.suicides.push( suicide );
                 targetMember.suicides = _.orderBy( targetMember.suicides, f => f.date, 'asc' );
             }

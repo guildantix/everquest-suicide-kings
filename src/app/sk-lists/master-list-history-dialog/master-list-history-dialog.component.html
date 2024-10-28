@@ -38,7 +38,7 @@
             </tr>
             <tr *ngFor="let h of infiniteScroller.data">
                 <td *ngIf="h.historyType === historyTypes.Suicide; then suicide else other"></td>
-                <ng-template #suicide><span class="pointer hover-blue" (click)="searchTerm = h.list[h.suicideIndex].name">{{h.list[h.suicideIndex].name}}</span></ng-template>
+                <ng-template #suicide><span class="pointer hover-blue" (click)="searchTerm = h.list[h.suicideIndex]?.name">{{h.list[h.suicideIndex]?.name}}</span></ng-template>
                 <ng-template #other><span class="pointer hover-blue {{getHistoryItemCssClassName(h)}}" (click)="searchTerm = h.characterName">{{h.characterName}}</span></ng-template>
                 <td class="subtle-date">{{h.timestamp | date:'short'}}</td>
                 <td class="pointer" style="padding-top: 4px;">

@@ -236,6 +236,14 @@ export class IpcService {
         this.ipc.send( 'app:quit' );
     }
 
+    public logException( ex: any ): void {
+        this.ipc.send( 'app:log:exception', ex );
+    }
+
+    public logInfo( info: string ): void {
+        this.ipc.send( 'app:log:info', info );
+    }
+
     public quitAndInstallUpdate(): void {
         this.ipc.send( 'app:restart', null );
     }

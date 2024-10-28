@@ -58,7 +58,7 @@
                         <th></th>
                     </tr>
                     <tr *ngFor="let h of masterHistoryPreview">
-                        <td>{{h.list[h.suicideIndex].name}}</td>
+                        <td>{{h.list[h.suicideIndex]?.name}}</td>
                         <td class="subtle-date">{{h.timestamp | date:'short'}}</td>
                         <td class="pointer" style="padding-top: 4px;">
                             <a class="a-btn parent-hover-only hover-blue" (click)="showHistoryNote(h)"><mat-icon fontSet="material-icons-outlined">description</mat-icon></a>

@@ -8,6 +8,10 @@ const nanoid = customAlphabet( alphabet, 16 );
 const _ = require( 'lodash' );
 
 
+window.onerror = ( error, url, line ) => {
+    ipcRenderer.send( 'app:log:exception', `$${error}\r\n    at ${url}:${line}` );
+};
+
 var currentPosition = null;
 
 var logParseTimeoutId = null;

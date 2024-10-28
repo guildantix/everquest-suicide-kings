@@ -6,12 +6,19 @@ const { clipboard } = require( 'electron' );
 const ForwardRef = require( './src/electron/forward-ref' );
 const Database = require( './src/electron/data/storage' );
 const WindowManager = require( './src/electron/utilities/window-manager' );
+const log = require( 'electron-log' );
+const unhandled = require('electron-unhandled');
 
 /** @type {BrowserWindow} */
 var mainWindow;
 var enableDevMode = true;
 
 GH_TOKEN = "e3460400ae1273a5cac83e1b86a5aceae7f8bab7";
+
+unhandled({
+    logger: log.error,
+    showDialog: false,
+} );
 
 const database = new Database();
 const updateCheckInterval = 10 * 60 * 1000;
@@ -132,6 +139,14 @@ app.on( 'window-all-closed', function () {
 
 app.on( 'activate', function () {
     if ( mainWindow === null ) createWindow()
+} );
+
+ipcMain.on( 'app:log:exception', ( event, data ) => {
+    log.error( data );
+} );
+
+ipcMain.on( 'app:log:info', ( event, data ) => {
+    log.info( data );
 } );
 
 ipcMain.on( 'app:quit', ( event, data ) => { app.quit(); } );

@@ -108,7 +108,7 @@ export class RaidModalComponent implements OnInit {
         this.ipcService.getRaids().subscribe( raids => {
             this.raidDb = raids;
             let activeRaid = raids.find( f => !f.completed );
-            let lastRaidDate = new Date( raids[ raids.length - 1 ].date );
+            let lastRaidDate = new Date( raids[ raids.length - 1 ]?.date ?? new Date() );
 
             this.ipcService.getMasterListsDb().subscribe( db => {
                     
@@ -1260,7 +1260,7 @@ export class RaidModalComponent implements OnInit {
      */
     askSuicideRaider( raider: RaidMember, masterListId: string ) {
         
-        let loots = this.guildRoster.find( f => f.name === raider.name ).suicides;
+        let loots = this.guildRoster.find( f => f.name === raider.name ).suicides ?? [];
         let lootedCount: number = loots.filter( f => f.item != null && f.item === this.bidArticle )?.length;
         
         this.dialogService.showInputDialog(
@@ -1778,7 +1778,7 @@ export class RaidModalComponent implements OnInit {
             'Enter the character name',
             null
         ).subscribe( output => {
-            if ( output.value ) {
+            if ( output?.value ) {
                 this.addStandby( output.value );
             }
         } );

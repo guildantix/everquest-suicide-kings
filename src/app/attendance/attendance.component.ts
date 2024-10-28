@@ -90,7 +90,7 @@ export class AttendanceComponent implements OnInit {
         } ).subscribe( results => {
             this.raidTrackingCount = results.raidTrackingCount;
             this.roster = [];
-            this.raids = results.raids;
+            this.raids = results.raids.filter( f => f.lists?.some( x => x.list?.length > 0 ) );
             this.listsDb = results.masterLists;
             this.rankOptions = _.uniq( results.roster.map( f => f.rank ) ).filter( f => f != null );
             this.classOptions = _.uniq( results.roster.map( f => f.class ) ).filter( f => f != null );
@@ -100,15 +100,15 @@ export class AttendanceComponent implements OnInit {
             let sixtyDays = DateUtilities.addDays( now, -60 );
             let ninetyDays = DateUtilities.addDays( now, -90 );
 
-            let thirtyDayRaidCount = results.raids.filter( f => new Date( f.date ) >= thirtyDays ).length;
-            let sixtyDayRaidCount = results.raids.filter( f => new Date( f.date ) >= sixtyDays ).length;
-            let ninetyDayRaidCount = results.raids.filter( f => new Date( f.date ) >= ninetyDays ).length;
-            let allRaidCount = results.raids.length;
-            let trackedRaidCount = results.raids.length < this.raidTrackingCount ? results.raids.length : this.raidTrackingCount;
+            let thirtyDayRaidCount = this.raids.filter( f => new Date( f.date ) >= thirtyDays ).length;
+            let sixtyDayRaidCount = this.raids.filter( f => new Date( f.date ) >= sixtyDays ).length;
+            let ninetyDayRaidCount = this.raids.filter( f => new Date( f.date ) >= ninetyDays ).length;
+            let allRaidCount = this.raids.length;
+            let trackedRaidCount = this.raids.length < this.raidTrackingCount ? this.raids.length : this.raidTrackingCount;
 
             let raidAttendances: IRaidAttendance[] = [];
 
-            results.raids.forEach( raid => {
+            this.raids.forEach( raid => {
                 let raidDate = new Date( raid.date );
                 let raidAttendance: IRaidAttendance = {
                     date: raidDate,
